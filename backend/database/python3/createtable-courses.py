@@ -60,6 +60,10 @@ if __name__ == "__main__":
                                 #need a script to parse this information
         },
         {
+            'AttributeName': 'Name',
+            'AttributeType': 'S'  #Name of course
+        },
+        {
             'AttributeName': 'Professor',
             'AttributeType': 'S'  #Professor
         },
