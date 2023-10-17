@@ -1,0 +1,4 @@
+backend/database/.venv
+backend/database/boto3
+backend/database/lab5example-python3
+backend/database/lab5example-resources
