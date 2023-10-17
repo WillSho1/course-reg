@@ -1,92 +1,33 @@
 import boto3
 
 # Initialize the DynamoDB client
-dynamodb = boto3.client('dynamodb')
+dynamodb = boto3.client('dynamodb', region_name="us-east-1")
 
 def createtable():
 
-    # Define the table schema
-    table_name = 'Courses'
-    key_schema = [
-        {
-            'AttributeName': 'CourseID',
-            'KeyType': 'HASH'
-        },
-        {
-            'AttributeName': 'Section',
-            'KeyType': 'RANGE'
-        },
-        # Add additional entries for sort keys if needed
-    ]
-
-    attribute_definitions = [
-        {
-            'AttributeName': 'CourseID',
-            'AttributeType': 'S'  #CourseID
-        },
-        {
-            'AttributeName': 'Section',
-            'AttributeType': 'S'  #Section number
-        },
-    ]
-
-    # Provisioned throughput settings (adjust as needed)
-    read_capacity_units = 1
-    write_capacity_units = 1
-
-    # Create the table
-    response = dynamodb.create_table(
-        TableName=table_name,
-        KeySchema=key_schema,
-        AttributeDefinitions=attribute_definitions,
+    # Define the table name and schema for the Courses table.
+    courses_table_name = 'Courses'
+    courses_table = dynamodb.create_table(
+        TableName=courses_table_name,
+        KeySchema=[
+            {'AttributeName': 'CourseID', 'KeyType': 'HASH'},
+            {'AttributeName': 'Section', 'KeyType': 'RANGE'}
+        ],
+        AttributeDefinitions=[
+            {'AttributeName': 'CourseID', 'AttributeType': 'S'},
+            {'AttributeName': 'Section', 'AttributeType': 'S'}
+        ],
         ProvisionedThroughput={
-            'ReadCapacityUnits': read_capacity_units,
-            'WriteCapacityUnits': write_capacity_units
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
         }
     )
 
-    # Wait for the table to be created (optional)
-    response.wait_until_exists()
-    print("Table: {table_name} created!")
+    # Wait for the table to be created.
+    courses_table.wait_until_exists()
+
+    print(f'Table {courses_table_name} created successfully.')
 
 
 if __name__ == "__main__":
     createtable()
-
-
-    """{
-            'AttributeName': 'Time',
-            'AttributeType': 'S'  #Map times to days of the week
-                                #need a script to parse this information
-        },
-        {
-            'AttributeName': 'Name',
-            'AttributeType': 'S'  #Name of course
-        },
-        {
-            'AttributeName': 'Professor',
-            'AttributeType': 'S'  #Professor
-        },
-        {
-            'AttributeName': 'Description',
-            'AttributeType': 'S'  #Short Description of the course
-        },
-        {
-            'AttributeName': 'PreReqs',
-            'AttributeType': 'S'  #list of pre-reqs
-                                    #need script to parse (should be simple)
-        },
-        {
-            'AttributeName': 'StudentList',
-            'AttributeType': 'S'  #List of students enrolled
-                                    #need script to parse (can be same as prereqs)
-        },
-        {
-            'AttributeName': 'EnrollmentCap',
-            'AttributeType': 'N'  #enrollment cap
-        },
-        {
-            'AttributeName': 'MajorReqs',
-            'AttributeType': 'S'  #List of allowed majors
-                                    #need script to parse (should be simple)
-        },"""

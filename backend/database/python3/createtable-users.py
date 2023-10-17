@@ -1,60 +1,33 @@
 import boto3
 
 # Initialize the DynamoDB client
-dynamodb = boto3.client('dynamodb')
+dynamodb = boto3.client('dynamodb', region_name="us-east-1")
 
 def createtable():
 
-    # Define the table schema
-    table_name = 'Users'
-    key_schema = [
-        {
-            'AttributeName': 'userID',
-            'KeyType': 'HASH'
-        },
-        {
-            'AttributeName': 'password',
-            'KeyType': 'RANGE'
-        },
-        # Add additional entries for sort keys if needed
-    ]
-
-    attribute_definitions = [
-        {
-            'AttributeName': 'userID',
-            'AttributeType': 'S'  #userID
-        },
-        {
-            'AttributeName': 'password',
-            'AttributeType': 'S'  #hashed of course
-        },
-    ]
-
-    # Provisioned throughput settings (adjust as needed)
-    read_capacity_units = 1
-    write_capacity_units = 1
-
-    # Create the table
-    response = dynamodb.create_table(
-        TableName=table_name,
-        KeySchema=key_schema,
-        AttributeDefinitions=attribute_definitions,
+    # Define the table name and schema for the Users table.
+    users_table_name = 'Users'
+    users_table = dynamodb.create_table(
+        TableName=users_table_name,
+        KeySchema=[
+            {'AttributeName': 'Type', 'KeyType': 'HASH'},
+            {'AttributeName': 'UserID', 'KeyType': 'RANGE'}
+        ],
+        AttributeDefinitions=[
+            {'AttributeName': 'Type', 'AttributeType': 'S'},
+            {'AttributeName': 'UserID', 'AttributeType': 'S'}
+        ],
         ProvisionedThroughput={
-            'ReadCapacityUnits': read_capacity_units,
-            'WriteCapacityUnits': write_capacity_units
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
         }
     )
 
-    # Wait for the table to be created (optional)
-    response.wait_until_exists()
-    print("Table: {table_name} created!")
+    # Wait for the table to be created.
+    users_table.wait_until_exists()
+
+    print(f'Table {users_table_name} created successfully.')
 
 
 if __name__ == "__main__":
     createtable()
-
-
-    """Other attributes to include:
-            user type
-            taken courses
-            enrolled courses"""
