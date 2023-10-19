@@ -1,3 +1,12 @@
+@import "@unocss/reset/tailwind-compat.css";
+/*
+this imports a css reset
+
+a css reset is a stylesheet that applies rules
+such that the "default styles" of every major
+browser are identical
+*/
+
 .xxlarge {
     font-size: xx-large;
 }
@@ -10,14 +19,6 @@
     text-align: center;
 }
 
-/*
-this imports a css reset
-
-a css reset is a stylesheet that applies rules
-such that the "default styles" of every major
-browser are identical
-*/
-@import "@unocss/reset/tailwind-compat.css";
 
 /* give links a blue color, and underline them */
 a {
