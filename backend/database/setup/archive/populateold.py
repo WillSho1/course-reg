@@ -98,8 +98,8 @@ for user in userlist:
     userpopulation.append(toadd)
 
 # Save the course data to a JSON file
-with open('courses.json', 'w') as json_file:
-    json.dump(coursepopulation, json_file, indent=2)
+"""with open('courses.json', 'w') as json_file:
+    json.dump(coursepopulation, json_file, indent=2)"""
 
 print("courses.json file created with 100 course examples.")
 
