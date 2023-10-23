@@ -5,17 +5,7 @@
       <nav>
         <ul>
           <li>
-            <RouterLink to="/">Home</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/fetch">Fetch Example</RouterLink>
-          </li>
-          <li>
-            <!--
-              This RouterLink does not point to a specific path, but rather the name of a route.
-              Check out router/index.js for how this is defined
-            -->
-            <RouterLink :to="{ name: 'form' }">Form Example</RouterLink>
+            <RouterLink to="/studenthome">Student Home</RouterLink>
           </li>
         </ul>
       </nav>
