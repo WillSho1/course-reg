@@ -3,10 +3,8 @@
 // we start by importing the createRouter and createWebHistory functions, as well as the components describing each of our views
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import FormView from "../views/FormView.vue";
-import FetchView from "../views/FetchView.vue";
 import StudentHomeView from "../views/Student/StudentHomeView.vue"
-import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue"
+import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue" 
 
 const router = createRouter({
   // the history mode determines how vue router interacts with the url.
@@ -23,19 +21,9 @@ const router = createRouter({
   // and, most importantly, the component that should be rendered for the view
   routes: [
     {
-      path: "/",
+      path: "/home",
       name: "home",
       component: HomeView,
-    },
-    {
-      path: "/form",
-      name: "form",
-      component: FormView,
-    },
-    {
-      path: "/fetch",
-      name: "fetch",
-      component: FetchView,
     },
     {
       path: "/studenthome",
@@ -46,6 +34,10 @@ const router = createRouter({
       path: "/studentcs",
       name: "studentcs",
       component: StudentCourseSearchView
+    },
+    {
+      path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones
+      redirect: '/home',
     },
   ],
 });
