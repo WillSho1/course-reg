@@ -1,83 +1,56 @@
 <template>
-    <main class="form">
-      <h2>Please enter a course to search for (Example: CSE 1010)</h2>
-  
-      <form @submit.prevent="createTodo" class="create-todo">
-        <label for="todo">Search:</label>
-        <input type="text" id="todo" name="todo" v-model="newTodo" />
-        <button type="submit">Enter</button>
-      </form>
-  
-      <ul>
-        <!--
-          v-for requires a unique key for every element so that it can efficiently keep track
-          of each list item. it is possible for the user to type the same todo more than once,
-          so the todo itself isn't necessarily unique. the index on its own is of course unique,
-          it represents each unique place in the array. there are unfortunately edge case issues
-          with using the index alone that we don't need to get into, so we combine the todo and
-          the index into a unique key that will work in all situations
-        -->
-        <li v-for="(todo, index) in todos" :key="todo + index">
-          {{ todo }}
-          <button @click="deleteTodo(index)">Delete</button>
-        </li>
-        <li v-if="todos.length === 0">
-          <p>You are not enrolled in any courses yet!</p>
-        </li>
-      </ul>
-    </main>
-  </template>
-  
-  <script setup>
-  import { ref } from "vue";
-  
-  const newTodo = ref("");
-  
-  const todos = ref([]);
-  
-  // function to run when the create todo form is submitted
-  function createTodo() 
-  {
-    // sanitize the input by removing the whitespace from the beginning and end of newTodo.value
-    const todoToAdd = newTodo.value.trim();
-  
-    // if the sanitized input is not an empty string (i.e., an actual todo), add it to the list and reset the form
-    if (todoToAdd !== "") {
-      todos.value.push(todoToAdd);
-      newTodo.value = "";
-    }
-  }
-  
-  // when a todo's delete button is clicked, the index of that todo is passed to this function
-  // Array.splice takes an index in the array and a number of items to delete after that
-  function deleteTodo(index) {
-    todos.value.splice(index, 1);
-  }
+  <main class="form">
+    <h2>Please enter a course to search for (Example: CSE 1010)</h2>
 
-  function querySubjects(subject)
-  {
-    var AWS = require('aws-sdk');
-    var dydb = new AWS.DynamoDB({apiVersion: '2019-11-21'});
+    <form @submit.prevent="searchCourses" class="search-course">
+      <label for="courseQuery">Search:</label>
+      <input type="text" id="courseQuery" name="courseQuery" v-model="courseQuery" />
+      <button type="submit">Search</button>
+    </form>
 
-    const params = {
-      // Specify which items in the results are returned.
-      FilterExpression: "Subject = :topic AND Season = :s AND Episode = :e",
-      // Define the expression attribute value, which are substitutes for the values you want to compare.
-      ExpressionAttributeValues: {
-        ":topic": {S: "SubTitle2"},
-        ":s": {N: 1},
-        ":e": {N: 2},
-      },
-      // Set the projection expression, which are the attributes that you want.
-      ProjectionExpression: "Season, Episode, Title, Subtitle",
-      TableName: "Subjects",
-};
-  }
+    <ul>
+      <li v-for="(course, index) in courses" :key="course.subject + course.courseid">
+        {{ course.subject }} {{ course.courseid }}
+        <button @click="enrollInCourse(index)">Enroll</button>
+      </li>
+      <li v-if="courses.length === 0">
+        <p>No courses found!</p>
+      </li>
+    </ul>
+  </main>
+</template>
+  
+<script setup>
+import { ref } from "vue";
 
+const courseQuery = ref("");
 
+const courses = ref([]);
 
+function searchCourses() {
+    // Placeholder for API call
+    // For now, just simulate a course search
+    // Later, you'll replace this with an actual API call to fetch courses based on courseQuery.value
+    courses.value = [{
+        subject: "CSE",
+        courseid: "1010"
+    }, {
+        subject: "MATH",
+        courseid: "1100"
+    }];
+    
+    courseQuery.value = ""; // Clear the search input after searching
+}
 
-  </script>
+function enrollInCourse(index) {
+    // Logic to enroll the user in the selected course
+    // You might push this to a user's course list or make another API call to save the enrollment
+    console.log(`Enrolling in ${courses.value[index].subject} ${courses.value[index].courseid}`);
+    courses.value.splice(index, 1); // Remove course from list after enrolling
+}
+
+</script>
+
   
   <style>
   .form {

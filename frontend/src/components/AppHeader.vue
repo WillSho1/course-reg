@@ -2,10 +2,10 @@
   <header class="app-header">
     <div>
       <h1>{{ title }}</h1>
-      <nav>
+      <nav v-if="showLoginLink">
         <ul>
-          <li>
-            <RouterLink to="/studenthome">Student Home</RouterLink>
+          <li class="centered">
+            <RouterLink to="/home">Go to login</RouterLink>
           </li>
         </ul>
       </nav>
@@ -14,24 +14,28 @@
 </template>
 
 <script setup>
-// import the <RouterLink> component so that we can use it in the template above
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
+import { ref, watch } from 'vue';
 
-// give this component a title property so that the parent component (app.vue) can set whatever title it wants
-defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
+const title = ref("Section 1 Group 7 Course System");
+const route = useRoute();
+
+// By default, show the link
+const showLoginLink = ref(true);
+
+watch(route, (newRoute) => {
+  // Hide the link only if on the home page
+  showLoginLink.value = newRoute.path !== '/home';
 });
 </script>
-
+x
 <style>
 /* give the header itself a background color, a border, and add some padding to the content */
 .app-header {
-  background-color: #fcfcfc;
+  background-color: #007BFF;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem;
+  text-align: center;
 }
 
 /* make the title within the header a larger and bolder font */
