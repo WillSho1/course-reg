@@ -1,4 +1,4 @@
-""" Given: courseid, section, userID
+""" Given: course-id-section, userID
     TODO:
         update enrollment for users and courses tables
         return success message
