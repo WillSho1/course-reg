@@ -14,9 +14,11 @@ def lambda_handler(event, context):
     user = event["UserID"]
     course = event["CourseID"]
     section = event["Section"]
+    #string to be stored in User table - enrollment
     course_id_section = f"{course}-{section}"
     
     #CHECK: ENROLLMENT, PREREQS, COMPLETED
+    #get user information
     user_item = client.get_item(
         TableName='Users',
         Key={
@@ -28,6 +30,7 @@ def lambda_handler(event, context):
             }
         }
     )
+    #get course info in subj table
     subj = course.split()[0]
     course_item = client.get_item(
         TableName = 'Subjects',
@@ -42,16 +45,19 @@ def lambda_handler(event, context):
     )
     if ('Item' in user_item):
         if ('Item' in course_item):
+            #get list of prereqs from course, lists of taken and enrolled courses from user
             prereqs = course_item['Item'].get('Prereqs', {'L': []}).get('L', [])
             taken = user_item['Item'].get('Completed', {'L': []}).get('L', [])
             enrollment = user_item['Item'].get('Enrollment', {'L': []}).get('L', [])
             
-            clist = [item.get('S') for item in enrollment]
-            takenlist = [item.get('S') for item in taken]
+            #make lists of strings
             prelist = [item.get('S') for item in prereqs]
+            takenlist = [item.get('S') for item in taken]
+            clist = [item.get('S') for item in enrollment]
             #PREREQS
             notin = []
             for i in prelist:
+                #find missing prereqs
                 if i not in takenlist:
                     notin.append(i)
             if len(notin) > 0:
@@ -61,6 +67,7 @@ def lambda_handler(event, context):
                 }
             #TAKEN
             for classes in takenlist:
+                #check if already taken
                 if course in classes:
                     return {
                         'statusCode': 400,
@@ -68,25 +75,27 @@ def lambda_handler(event, context):
                     }
             #ALREADY ENROLLED
             for classes in clist:
+                #check if enrolled
                 if course in classes:
                     return {
                         'statusCode': 400,
                         'body': json.dumps(f'Already enrolled in {course_id_section}.')
                     }
         else:
-            #should never enter this
+            #in case course is not found
             return {
                 'statusCode': 400,
                 'body': json.dumps('Course not found')
             }
     else:
-        #should never enter this
+        #in case user is not found in table, should not enter this
         return {
             'statusCode': 400,
             'body': json.dumps('User not found')
         }
         
     #CHECK: CAPACITY
+    #get section info from course table
     course_item1 = client.get_item(
         TableName='Courses',
         Key={
@@ -99,22 +108,25 @@ def lambda_handler(event, context):
         }
     )
     if ('Item' in course_item1):
+        #capacity and current enrollment
         cap = course_item1['Item'].get('Capacity', {}).get('N', '0')
         enrollcount = course_item1['Item'].get('Enrollment', {}).get('N', '0')
         if cap == enrollcount:
+            #course is full
             return {
                 'statusCode': 400,
                 'body': json.dumps(f'{course_id_section} is currently full: {enrollcount}/{cap}.')
             }
     else:
         return {
-            #should never entert this
+            #should never enter this
             'statusCode': 400,
             'body': json.dumps(f'{course_id_section} not found')
         }
         
         
     #UPDATE TABLES IF PREVIOUS CONDITIONS PASS
+    #update section in course table
     response = client.update_item(
         TableName='Courses',
         Key={
@@ -128,13 +140,14 @@ def lambda_handler(event, context):
         UpdateExpression='SET Enrollment = Enrollment + :enrollment, StudentList = list_append(StudentList, :userId)',
         ExpressionAttributeValues={
             ':enrollment': {
-                'N': '1'  # Increment by 1
+                'N': '1'                #increment the enrollment
             },
             ':userId': {
-                'L': [{'S': user}]
+                'L': [{'S': user}]      #add user to list of students
             }
         }
     )
+    #update users enrollment
     response2 = client.update_item(
         TableName='Users',
         Key={
@@ -151,11 +164,12 @@ def lambda_handler(event, context):
                 'L': []
             },
             ':courseIdSection': {
-                'L': [{'S': course_id_section}]
+                'L': [{'S': course_id_section}]     #add course-section to student's enrollment list
             }
         }
     )
     return {
+        #if everything went well
         'statusCode': 200,
         'body': json.dumps(f'Successfully enrolled in {course_id_section}!')
     }
