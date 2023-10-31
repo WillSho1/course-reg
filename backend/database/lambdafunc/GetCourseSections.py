@@ -26,7 +26,8 @@ def lambda_handler(event, context):
         ExpressionAttributeValues={':val': {'S': courseid}},
         ProjectionExpression = '#courseid, #sec, #enr, #cap, #loc, #sched, #teachid'
     )
-    
+    #adjust to get teacher name instead of id
+
     items = response.get('Items', [])
     if len(items) == 0:
         return {

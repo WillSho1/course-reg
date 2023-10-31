@@ -1,8 +1,8 @@
-""" Given: courseID-section, UserID
+""" Given: courseID-section,  UserID
     TODO:
         query course table for more information on this course/section
         return information on the course (MAKE SURE TO DIFFERENTIATE BETWEEN USERS)
-    Users: Students
+    Users: teachers
 """
 import json
 import boto3
@@ -21,10 +21,10 @@ def lambda_handler(event, context):
         TableName='Users',
         Key={
             'Type': {
-                'S': 'Student',
+                'S': 'Teacher',
             },
             'UserID': {
-                'S': userid        
+                'S': userid    
             }
         }
     )
@@ -51,30 +51,11 @@ def lambda_handler(event, context):
         #get items to return
         location = course_item['Item'].get('Location', {'S': ''})
         schedule = course_item['Item'].get('Schedule', {'M': {}})
-        teacher = course_item['Item'].get('TeacherID', {'S': ''})
+        studentlist = course_item['Item'].get('StudentList', {'L': []})
         result = {}
         result['Location'] = location
         result['Schedule'] = schedule
-        
-        #need teacher name
-        tname = teacher
-        result['TeacherName'] = {'S': 'Teacher not found'}
-        if teacher.get('S', '') != 'unassigned':
-            teacher_item = client.get_item(
-                TableName='Users',
-                Key={
-                    'Type': {
-                        'S': "Teacher",
-                    },
-                    'UserID': {
-                        'S': teacher.get('S', '')        
-                    }
-                }
-            )
-            if ('Item' in teacher_item):
-                result['TeacherName'] = teacher_item['Item'].get('Name', {'S': ''})
-        else:
-            result['TeacherName'] = {'S': 'unassigned'}
+        result['StudentList'] = studentlist
         return {
             'statusCode': 200,
             'body': json.dumps(result)

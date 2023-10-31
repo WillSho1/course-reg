@@ -1,6 +1,6 @@
 """ Given:  userID
     Return: enrollment list
-    Users:  Students
+    Users:  Teachers
 """
 
 import json
@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         TableName='Users',
         Key={
             'Type': {
-                'S': 'Student',
+                'S': 'Teacher',
             },
             'UserID': {
                 'S': userid        
