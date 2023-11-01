@@ -9,11 +9,19 @@
           </div>
 
           <div class="login-options">
-              <button @click="loginAs('student')">Login as Student</button>
-              <button @click="loginAs('admin')">Login as Admin</button>
-              <button @click="loginAs('teacher')">Login as Teacher</button>
+              <button @click="loginAs('Student')">Login as Student</button>
+              <button @click="loginAs('Admin')">Login as Admin</button>
+              <button @click="loginAs('Teacher')">Login as Teacher</button>
           </div>
       </div>
+      <!-- For Login Failures -->
+      <div class="modal" v-if="showModal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <!--<h3>Login Failed</h3>-->
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -24,14 +32,64 @@ const username = ref("");
 const password = ref("");
 
 function loginAs(role) {
-  if (role === 'student') {
-      console.log('Logging in as student...');
-  } else if (role === 'admin') {
-      console.log('Logging in as admin...');
-  } else if (role === 'teacher') {
-      console.log('Logging in as teacher...');
-  }
+  let endpoint;
+
+  endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/login';
+
+  //make API request with following information
+  fetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({
+      "UserID": username.value,
+      "Type": role,
+      "Password": password.value
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      if (data.statusCode === 200) {
+        // Successful login, display or process the API response data
+        console.log(data.body);
+
+        // Handle redirection based on the role in the Lambda response
+        if (role == 'Student') {
+          window.location.href = '/studenthome'; //redirect
+        } else if (role == 'Teacher') {
+          window.location.href = '/teacherhome';
+        } else if (role == 'Admin') {
+          window.location.href = '/adminhome';
+        }
+      } else {
+        //handle login failure
+        //console.log(`Failed to log in as ${username.value}`);
+        console.log(data.body);
+        //show the login failure box
+        openModal(data.body);
+      }
+    })
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
 }
+
+//functions for login failure
+const showModal = ref(false);
+const errorMessage = ref("");
+
+function openModal(message) {
+  errorMessage.value = message;
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
 </script>
 
 <style>
@@ -71,6 +129,34 @@ function loginAs(role) {
   padding: 0.5rem;
   border: 1px solid #d9d9d9;
   border-radius: 0.375rem;
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: auto;
+  max-width: 80%;
+  
+  padding: 10px;
+
+  border: 2px solid #ff0000;
+  border-radius: 5px;
+  background: #fff;
+
+  text-align: center;
+}
+
+.modal-content {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: -70%; 
+  right: -2.5%;
 }
 
 button {

@@ -1,8 +1,24 @@
-""" Given: courseID-section,  UserID
+""" Use case:   When a teacher clicks on a section they are assigned to in order to find more information.
+    Users: Teachers
+    Type: GET
+    Endpoint: ./teacherhomepage/enrollment/courseinfo
+    Provide in request:
+        Query String:
+            course-id-section=___
     TODO:
-        query course table for more information on this course/section
-        return information on the course (MAKE SURE TO DIFFERENTIATE BETWEEN USERS)
-    Users: teachers
+        Query course table for more information on this section
+    Response to 200:
+        {
+            'Location': '',
+            'Schedule': {
+                'Monday': '',
+                'Wednesday': '',
+                'Friday': ''
+            }
+            'StudentList': ['UserID']
+        }
+    Response otherwise:
+        String detailing error
 """
 import json
 import boto3
@@ -14,9 +30,52 @@ def lambda_handler(event, context):
     split = course_id_section.split('-')
     courseid = split[0]
     section = split[1]
-    userid = event["UserID"]
+
+    corsheaders = {
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Content-Type": "application/json"
+    }
+    #find course
+    course_item = client.get_item(
+        TableName='Courses',
+        Key={
+            'CourseID': {
+                'S': courseid,
+            },
+            'Section': {
+                'N': section
+            }
+        }
+    )
+    if ('Item' in course_item):
+        #get items to return
+        location = course_item['Item'].get('Location', {'S': ''})
+        schedule = course_item['Item'].get('Schedule', {'M': {}})
+        studentlist = course_item['Item'].get('StudentList', {'L': []})
+        result = {}
+        result['Location'] = location
+        result['Schedule'] = schedule
+        result['StudentList'] = studentlist
+        return {
+            'statusCode': 200,
+            'headers': corsheaders,
+            'body': json.dumps(result)
+        }
+        
+    else:
+        return {
+            #should not reach this point
+            'statusCode': 400,
+            'headers': corsheaders,
+            'body': json.dumps(f'Course not found')
+        }
     
-    #CHECK FOR AUTHORIZATION - make sure user with that type exists
+
+#EXTRA
+"""authorization - could be done in later step
+#CHECK FOR AUTHORIZATION - make sure user with that type exists
     user_item = client.get_item(
         TableName='Users',
         Key={
@@ -34,36 +93,4 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': json.dumps(f'Incorrect Authorization')
         }
-    #else...
-    course_item = client.get_item(
-        TableName='Courses',
-        Key={
-            'CourseID': {
-                'S': courseid,
-            },
-            'Section': {
-                'N': section
-            }
-        }
-    )
-    if ('Item' in course_item):
-        #MAKE SURE THE FRONTEND LIKES THE OUTPUT
-        #get items to return
-        location = course_item['Item'].get('Location', {'S': ''})
-        schedule = course_item['Item'].get('Schedule', {'M': {}})
-        studentlist = course_item['Item'].get('StudentList', {'L': []})
-        result = {}
-        result['Location'] = location
-        result['Schedule'] = schedule
-        result['StudentList'] = studentlist
-        return {
-            'statusCode': 200,
-            'body': json.dumps(result)
-        }
-        
-    else:
-        return {
-            #should not reach this point
-            'statusCode': 400,
-            'body': json.dumps(f'Course not found')
-        }
+        """

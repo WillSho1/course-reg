@@ -1,8 +1,20 @@
-""" Given: UserID, CourseID, Section, 
-    TODO:
-        update users and courses tables for enrollment
-        return a success message
+""" Use Case: A student clicks to enroll in a course.
     Users: Students
+    Type: POST
+    Endpoint: ./studenthomepage/search/courses/sections
+    Provide in request:
+        Body:
+        {
+            "CourseID": '',
+            "UserID": '',
+            "Section": N
+        }
+    TODO:
+        CHECKS: capacity, prereqs, enrollment, completed
+        Update users table for enrollment
+        Update courses table for studentlist, enrollment
+    Response:
+        Strings signifying success or failure
 """
 
 import json
@@ -16,6 +28,12 @@ def lambda_handler(event, context):
     section = event["Section"]
     #string to be stored in User table - enrollment
     course_id_section = f"{course}-{section}"
+    corsheaders = {
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,POST",
+        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Content-Type": "application/json"
+    }
     
     #CHECK: ENROLLMENT, PREREQS, COMPLETED
     #get user information
@@ -63,6 +81,7 @@ def lambda_handler(event, context):
             if len(notin) > 0:
                 return {
                     'statusCode': 400,
+                    'headers': corsheaders,
                     'body': json.dumps(f'Missing Prereqs: {notin}')
                 }
             #TAKEN
@@ -71,6 +90,7 @@ def lambda_handler(event, context):
                 if course in classes:
                     return {
                         'statusCode': 400,
+                        'headers': corsheaders,
                         'body': json.dumps(f'Already completed {course}.')
                     }
             #ALREADY ENROLLED
@@ -79,18 +99,21 @@ def lambda_handler(event, context):
                 if course in classes:
                     return {
                         'statusCode': 400,
+                        'headers': corsheaders,
                         'body': json.dumps(f'Already enrolled in {course_id_section}.')
                     }
         else:
             #in case course is not found
             return {
                 'statusCode': 400,
+                'headers': corsheaders,
                 'body': json.dumps('Course not found')
             }
     else:
         #in case user is not found in table, should not enter this
         return {
             'statusCode': 400,
+            'headers': corsheaders,
             'body': json.dumps('User not found')
         }
         
@@ -115,12 +138,14 @@ def lambda_handler(event, context):
             #course is full
             return {
                 'statusCode': 400,
+                'headers': corsheaders,
                 'body': json.dumps(f'{course_id_section} is currently full: {enrollcount}/{cap}.')
             }
     else:
         return {
             #should never enter this
             'statusCode': 400,
+            'headers': corsheaders,
             'body': json.dumps(f'{course_id_section} not found')
         }
         
@@ -171,5 +196,6 @@ def lambda_handler(event, context):
     return {
         #if everything went well
         'statusCode': 200,
+        'headers': corsheaders,
         'body': json.dumps(f'Successfully enrolled in {course_id_section}!')
     }

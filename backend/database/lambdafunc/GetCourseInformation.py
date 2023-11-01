@@ -1,9 +1,27 @@
-""" Given: courseID-section, UserID
-    TODO:
-        query course table for more information on this course/section
-        return information on the course (MAKE SURE TO DIFFERENTIATE BETWEEN USERS)
+""" Use case:   When a student clicks on a section they are assigned to in order to find more information.
     Users: Students
+    Type: GET
+    Endpoint: ./studenthomepage/enrollment/courseinfo
+    Provide in request:
+        Query String:
+            course-id-section=___
+    TODO:
+        Query course table for more information on this section
+    Response to 200:
+        {
+            'Location': '',
+            'Schedule': {
+                'Monday': '',
+                'Wednesday': '',
+                'Friday': ''
+            }
+            'Teacher': 'Name'
+        }
+    Response otherwise:
+        String detailing error
 """
+#example of authorization can be found in bottom of GetCourseInfoTeacher.py
+
 import json
 import boto3
 
@@ -14,27 +32,14 @@ def lambda_handler(event, context):
     split = course_id_section.split('-')
     courseid = split[0]
     section = split[1]
-    userid = event["UserID"]
-    
-    #CHECK FOR AUTHORIZATION - make sure user with that type exists
-    user_item = client.get_item(
-        TableName='Users',
-        Key={
-            'Type': {
-                'S': 'Student',
-            },
-            'UserID': {
-                'S': userid        
-            }
-        }
-    )
-    
-    if ('Item' not in user_item):
-        return {
-            'statusCode': 400,
-            'body': json.dumps(f'Incorrect Authorization')
-        }
-    #else...
+    corsheaders = {
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Content-Type": "application/json"
+    }
+
+    #find section
     course_item = client.get_item(
         TableName='Courses',
         Key={
@@ -47,36 +52,18 @@ def lambda_handler(event, context):
         }
     )
     if ('Item' in course_item):
-        #MAKE SURE THE FRONTEND LIKES THE OUTPUT
         #get items to return
         location = course_item['Item'].get('Location', {'S': ''})
         schedule = course_item['Item'].get('Schedule', {'M': {}})
-        teacher = course_item['Item'].get('TeacherID', {'S': ''})
+        teacher = course_item['Item'].get('TeacherName', {'S': ''})
         result = {}
         result['Location'] = location
         result['Schedule'] = schedule
+        result['TeacherName'] = teacher
         
-        #need teacher name
-        tname = teacher
-        result['TeacherName'] = {'S': 'Teacher not found'}
-        if teacher.get('S', '') != 'unassigned':
-            teacher_item = client.get_item(
-                TableName='Users',
-                Key={
-                    'Type': {
-                        'S': "Teacher",
-                    },
-                    'UserID': {
-                        'S': teacher.get('S', '')        
-                    }
-                }
-            )
-            if ('Item' in teacher_item):
-                result['TeacherName'] = teacher_item['Item'].get('Name', {'S': ''})
-        else:
-            result['TeacherName'] = {'S': 'unassigned'}
         return {
             'statusCode': 200,
+            'headers': corsheaders,
             'body': json.dumps(result)
         }
         
@@ -84,5 +71,6 @@ def lambda_handler(event, context):
         return {
             #should not reach this point
             'statusCode': 400,
+            'headers': corsheaders,
             'body': json.dumps(f'Course not found')
         }
