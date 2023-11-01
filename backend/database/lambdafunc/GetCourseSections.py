@@ -1,8 +1,36 @@
-""" TODO:
-        given a courseID query course table
-        return all sections of the course
+""" Use case:   In search, students will click on a course in order to view
+                the sections of that course. Admins will do the same.
     Users: Students, Admins
+    Type: GET
+    Endpoint: ./studenthomepage/courses/sections, ./adminhomepage/courses/sections
+    Provide in request:
+        Query String:
+            CourseID=___
+    TODO:
+        Query course table for courseid
+        Return all sections of the course
+    Respons to 200: List of sections (dictionaries)
+        [
+            {
+                'Enrollment': N,
+                'Capacity': N,
+                'Location': '',
+                'TeacherName': '',
+                'CourseID': '',
+                'Schedule': {
+                    'Monday': '',
+                    'Tuesday': '',
+                    'Thursday': ''
+                },
+                'Section': 1
+            },
+            {Section 2},...
+        ]
+        
+    Response otherwise:
+        String detailing error
 """
+
 import json
 import boto3
 
@@ -10,7 +38,14 @@ client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
     courseid = event["CourseID"]
-        
+    corsheaders = {
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,POST",
+        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Content-Type": "application/json"
+    }
+    
+    #get sections
     response = client.query(
         TableName = "Courses",
         KeyConditionExpression='#courseid = :val',
@@ -21,20 +56,20 @@ def lambda_handler(event, context):
                 '#cap': 'Capacity', 
                 '#loc': 'Location',
                 '#sched': 'Schedule',
-                '#teachid': 'TeacherID', 
+                '#teachname': 'TeacherName'
         },
         ExpressionAttributeValues={':val': {'S': courseid}},
-        ProjectionExpression = '#courseid, #sec, #enr, #cap, #loc, #sched, #teachid'
+        ProjectionExpression = '#courseid, #sec, #enr, #cap, #loc, #sched, #teachname'
     )
-    #adjust to get teacher name instead of id
-
     items = response.get('Items', [])
     if len(items) == 0:
         return {
             'statusCode': 400,
+            'headers': corsheaders,
             'body': json.dumps(f'No available sections')
         }
     return {
         'statusCode': 200,
+        'headers': corsheaders,
         'body': json.dumps(items)
     }

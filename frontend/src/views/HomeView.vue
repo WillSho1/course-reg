@@ -65,9 +65,10 @@ function loginAs(role) {
           window.location.href = '/adminhome';
         }
       } else {
-        // Handle login failure
+        //handle login failure
         //console.log(`Failed to log in as ${username.value}`);
-        console.log(data.body); // You can display any error message or details from the Lambda function here.
+        console.log(data.body);
+        //show the login failure box
         openModal(data.body);
       }
     })
