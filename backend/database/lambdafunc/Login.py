@@ -4,6 +4,15 @@
         check password
         check type
         send success or failure message
+    Request:   
+    Query string:
+    Header:
+    Body:
+    {
+      "UserID": "",
+      "Type": "",
+      "Password": ""
+    }
 """
 
 import json
@@ -15,6 +24,13 @@ def lambda_handler(event, context):
     userid = event["UserID"]
     type = event["Type"]
     password = event["Password"]
+    corsheaders = {
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Methods": "OPTIONS, POST",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json"
+    }
     
     #look for user
     user_item = client.get_item(
@@ -34,16 +50,19 @@ def lambda_handler(event, context):
         if password == pw:
             return {
                 'statusCode': 200,
+                'headers': corsheaders,
                 'body': json.dumps(f'Login success!')
             }
         else:
             return {
                 'statusCode': 400,
-                'body': json.dumps(f'Login failed: incorrect credentials {pw}')
+                'headers': corsheaders,
+                'body': json.dumps(f'Login failed: incorrect credentials')
             }
     else:
         return {
             #should not reach
             'statusCode': 400,
+            'headers': corsheaders,
             'body': json.dumps(f'Login failed: user either not found or authorized')
         }
