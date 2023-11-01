@@ -28,7 +28,7 @@ watch(route, (newRoute) => {
   showLoginLink.value = newRoute.path !== '/home';
 });
 </script>
-x
+
 <style>
 /* give the header itself a background color, a border, and add some padding to the content */
 .app-header {
