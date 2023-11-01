@@ -48,7 +48,15 @@ def lambda_handler(event, context):
     if "Item" in user_item:
             #get list of enrollment
             courselist = user_item['Item'].get('Enrollment', {'L': []}).get('L', [])
+            #make new enrollment list - without course
             course_list = [classes for classes in courselist if classes['S'] != course_id_section]
+            #if nothing changed, they were not enrolled in course
+            if courselist == course_list:
+                return {
+                    'statusCode': 400,
+                    'headers': corsheaders,
+                    'body': json.dumps(f'Not enrolled in {course_id_section}')
+                }
     else:
         return {
             #should never enter this

@@ -100,7 +100,7 @@ def lambda_handler(event, context):
                     return {
                         'statusCode': 400,
                         'headers': corsheaders,
-                        'body': json.dumps(f'Already enrolled in {course_id_section}.')
+                        'body': json.dumps(f'Already enrolled in {course}.')
                     }
         else:
             #in case course is not found
