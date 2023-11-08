@@ -34,7 +34,7 @@ def lambda_handler(event, context):
     corsheaders = {
         "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
         "Access-Control-Allow-Methods": "GET,OPTIONS",
-        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json"
     }
     #find course
