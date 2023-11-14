@@ -45,7 +45,7 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'headers': corsheaders,
-            'body': json.dumps(enrollment)
+            'body': enrollment
         }
     else:
         return {

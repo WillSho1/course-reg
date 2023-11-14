@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import StudentHomeView from "../views/Student/StudentHomeView.vue"
 import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue" 
-import TestingFigmaView from "../views/TestingFigmaView.vue"
+
 
 const router = createRouter({
   // the history mode determines how vue router interacts with the url.
@@ -35,11 +35,6 @@ const router = createRouter({
       path: "/studentcs",
       name: "studentcs",
       component: StudentCourseSearchView
-    },
-    {
-      path: '/testingfigma',
-      name: 'figmatohtml',
-      component: TestingFigmaView
     },
     {
       path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones

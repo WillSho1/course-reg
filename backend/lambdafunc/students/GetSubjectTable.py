@@ -9,16 +9,16 @@
     TODO:
         Return a list of unique subj/courses
     Response to 200: Dictionary of subjects, with lists of courses
-        {
-            'SUBJ':  [{
+        [
+            {'SUBJ':  [{
                 'subject': 'SUBJ',
                 'courseid': 'SUBJ 1001',
                 'Description': 'Of course'
                 'Name': 'Intro to Subjects',
                 'Prereqs': ['SUBJ 1234'],       list of courseids
-            }]
-            'MATH': []
-        }
+            }]}
+            {'MATH': []}
+        ]
     Response otherwise:
         None
 """
@@ -66,14 +66,38 @@ def lambda_handler(event, context):
         all_courses.extend(response.get('Items', []))
         
     #want to add all of the courses to the dictionary, unless empty
+    #also making body nicer for front end
     for course in all_courses:
+        cid = course.get('courseid', {'S': ''}).get('S', '')
         subject = course.get('subject', {'S': ''}).get('S', '')
-        courseid = course.get('courseid', {'S': ''}).get('S', '')
-        if courseid == "empty": continue
-        subjdict[subject].append(course)
+        if cid == "empty": continue
+    
+        prereqs = course.get('Prereqs', {'L': []}).get('L', [])
+        prelist = []
+        for i in prereqs:
+            prelist.append(i["S"])
+    
+        coursedict = {
+            'subject': subject,
+            'courseid': cid,
+            'description': course.get('Description', {'S': ''}).get('S', ''),
+            'name': course.get('Name', {'S': ''}).get('S', ''),
+            'prereqs': sorted(prelist)
+        }
+    
+        #adding course dictionaries to subject dictionaries
+        subjdict[subject].append(coursedict)
+        #sorting the course dictionaries by courseid
+        subjdict[subject] = sorted(subjdict[subject], key=lambda x: x['courseid'])
+        
+        #make a sorted list to return sorted by subjects
+        retlist = []
+        for key in subjdict:
+            retlist.append({key: subjdict[key]})
+        retlist = sorted(retlist, key=lambda x: list(x.keys())[0])
     
     return {
         'statusCode': 200,
         'headers': corsheaders,
-        'body': json.dumps(subjdict)
+        'body': retlist
     }
