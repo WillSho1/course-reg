@@ -18,6 +18,7 @@
         Send success or failure message
     Response:
         String - message (check status code to see if logged in)
+
 """
 
 import json
@@ -30,11 +31,11 @@ def lambda_handler(event, context):
     type = event["Type"]
     password = event["Password"]
     corsheaders = {
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        "Access-Control-Allow-Methods": "OPTIONS,POST",
-        "Access-Control-Allow-Origin": "http://localhost:5173/",
-        "Content-Type": "application/json"
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "OPTIONS,POST",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json"
     }
     
     #look for user

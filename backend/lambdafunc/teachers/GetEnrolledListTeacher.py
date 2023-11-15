@@ -1,12 +1,12 @@
-""" Use case:   Automatically display list of enrolled courses to students.
-    Users: Students
+""" Use case:   Automatically display list of enrolled courses to teachers.
+    Users: Teachers
     Type: GET
-    Endpoint: ./studenthomepage/enrollment
+    Endpoint: ./teacherhomepage/enrollment
     Provide in request:
         Query String:
             UserID=___
     TODO:
-        Return list of courses student is enrolled in
+        Return list of courses teacher is assigned to
     Respons to 200: List of course-id-section
         [SUBJ 1234-1]
     Response otherwise:
@@ -22,17 +22,17 @@ def lambda_handler(event, context):
     userid = event["UserID"]
     corsheaders = {
         "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,POST",
-        "Access-Control-Allow-Origin": "http://localhost:5173/",
+        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json"
     }
-    
+
     #find user
     user_item = client.get_item(
         TableName='Users',
         Key={
             'Type': {
-                'S': 'Student',
+                'S': 'Teacher',
             },
             'UserID': {
                 'S': userid        

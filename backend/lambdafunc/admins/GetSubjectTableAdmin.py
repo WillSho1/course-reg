@@ -1,9 +1,8 @@
-""" Use case:   Should automatically call when a student opens the filter/search page,
-                or the admin opens their homepage. Display all of the subjects, with
+""" Use case:   Should automatically call when the admin opens their homepage. Display all of the subjects, with
                 their courses listed in a dropdown.
-    Users: Students, Admins
+    Users: Admins
     Type: GET
-    Endpoint: ./adminhomepage, ./studenthomepage/search
+    Endpoint: ./adminhomepage
     Provide in request:
         Nothing
     TODO:
@@ -30,10 +29,7 @@ client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
     corsheaders = {
-        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        "Access-Control-Allow-Methods": "GET,OPTIONS",
-        "Access-Control-Allow-Origin": "http://localhost:5173/",
-        "Content-Type": "application/json"
+        
     }
 
     response = client.scan(

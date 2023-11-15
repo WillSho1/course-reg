@@ -6,6 +6,7 @@ import HomeView from "../views/HomeView.vue";
 import StudentHomeView from "../views/Student/StudentHomeView.vue"
 import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue" 
 
+
 const router = createRouter({
   // the history mode determines how vue router interacts with the url.
   // createWebHistory() simulates the default browser behavior of changing

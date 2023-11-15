@@ -20,4 +20,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --disable=duplicate-code --ignore="Login.py, coursebatch.py, populate.py, populateold.py, userbatch.py, createtable-courses.py, createtable-users.py, createtable-subjects.py, starterPopulation.py, GetSubjectTable.py, GetSubjectTableAdmin.py, GetEnrolledList.py, GetCourseSections.py, GetCourseInformation.py, AddCourse.py, DropCourse.py, GetCourseInfoTeacher.py, GetEnrolledListTeacher.py" $(git ls-files '*.py')
+        pylint --disable=invalid-name --disable=duplicate-code --ignore="Login.py, coursebatch.py, populate.py, populateold.py, userbatch.py, createtable-courses.py, createtable-users.py, createtable-subjects.py, starterPopulation.py, GetSubjectTable.py, GetSubjectTableAdmin.py, GetEnrolledList.py, GetCourseSections.py, GetCourseInformation.py, AddCourse.py, DropCourse.py, GetCourseInfoTeacher.py, GetEnrolledListTeacher.py" $(git ls-files '*.py')
