@@ -59,6 +59,7 @@ function loginAs(role) {
         // Handle redirection based on the role in the Lambda response
         if (role == 'Student') {
           window.location.href = '/studenthome'; //redirect
+          //this.$router.push({ path: '/studenthome', query: { userId: username.value } });
         } else if (role == 'Teacher') {
           window.location.href = '/teacherhome';
         } else if (role == 'Admin') {
