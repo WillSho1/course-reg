@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import StudentHomeView from "../views/Student/StudentHomeView.vue"
 import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue" 
+import TeacherView from "../views/Teacher/TeacherView.vue"
 
 
 const router = createRouter({
@@ -35,6 +36,11 @@ const router = createRouter({
       path: "/studentcs",
       name: "studentcs",
       component: StudentCourseSearchView
+    },
+    {
+      path: "/teacherhome",
+      name: "teacherhome",
+      component: TeacherView
     },
     {
       path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones
