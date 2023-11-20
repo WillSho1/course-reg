@@ -1,23 +1,20 @@
 <template>
   <header class="app-header">
-    <div>
+    <div class="header-content">
       <h1>{{ title }}</h1>
-      <nav>
-        <ul>
-          <li>
-            <RouterLink to="/studentcs">Go to Course Search</RouterLink>
-          </li>
-        </ul>
-      </nav>
-      <div>
-        <h2>Enrolled Courses:</h2>
-        <ul>
-          <li v-for="course in courses" :key="course">{{ course }}</li>
-        </ul>
-      </div>
+    </div>
+    <div class="course-search">
+      <RouterLink to="/studentcs">Course Search</RouterLink>
+    </div>
+    <div class="course-list">
+      <h3>Below are your enrolled courses:</h3>
+      <ul>
+        <li v-for="course in courses" :key="course" class="course-item">{{ course }}</li>
+      </ul>
     </div>
   </header>
 </template>
+
 
   
 <script setup>
@@ -60,19 +57,59 @@ onMounted(() => {
 </script>
 
 
-  
-  <style>
-  /* give the header itself a background color, a border, and add some padding to the content */
-  .app-header {
-    background-color: #fcfcfc;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 1rem;
-  }
-  
-  /* make the title within the header a larger and bolder font */
-  .app-header h1 {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  </style>
-  
+<style>
+/* General page styles */
+body {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styles */
+.app-header {
+  background-color: #005792;
+  color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Course search styles */
+.course-search {
+  margin-top: 1rem;
+  padding: 0 2rem;
+}
+.course-search a {
+  color: #005792;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+/* Course list styles */
+.course-list {
+  margin-top: 1rem;
+  padding: 0 2rem;
+}
+.course-list h3 {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.course-item {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+}
+
+</style>
