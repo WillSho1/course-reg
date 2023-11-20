@@ -1,4 +1,9 @@
 <template>
+  <header class = "home-header">
+    <div>
+      <h1>{{ "Section 1 Group 7 Course System" }}</h1>
+    </div>
+  </header>
   <main class="home">
       <div class="login-section">
           <h2>Welcome to the Course Portal</h2>
@@ -27,16 +32,15 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router"; // Import useRouter
 
+const router = useRouter(); // Initialize the router
 const username = ref("");
 const password = ref("");
 
 function loginAs(role) {
-  let endpoint;
+  let endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/login';
 
-  endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/login';
-
-  //make API request with following information
   fetch(endpoint, {
     method: 'POST',
     body: JSON.stringify({
@@ -53,23 +57,21 @@ function loginAs(role) {
     })
     .then(data => {
       if (data.statusCode === 200) {
-        // Successful login, display or process the API response data
+        // Successful login
         console.log(data.body);
 
-        // Handle redirection based on the role in the Lambda response
+        // Redirect based on role
         if (role == 'Student') {
-          window.location.href = '/studenthome'; //redirect
-          //this.$router.push({ path: '/studenthome', query: { userId: username.value } });
+          // Use router.push with query parameters
+          router.push({ path: '/studenthome', query: { userId: username.value } });
         } else if (role == 'Teacher') {
-          window.location.href = '/teacherhome';
+          router.push('/teacherhome');
         } else if (role == 'Admin') {
-          window.location.href = '/adminhome';
+          router.push('/adminhome');
         }
       } else {
-        //handle login failure
-        //console.log(`Failed to log in as ${username.value}`);
+        // Login failure
         console.log(data.body);
-        //show the login failure box
         openModal(data.body);
       }
     })
@@ -78,7 +80,6 @@ function loginAs(role) {
     });
 }
 
-//functions for login failure
 const showModal = ref(false);
 const errorMessage = ref("");
 
@@ -92,6 +93,7 @@ function closeModal() {
 }
 
 </script>
+
 
 <style>
 .home {
@@ -174,4 +176,18 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+
+.home-header {
+  background-color: #007BFF;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem;
+  text-align: center;
+}
+
+.home-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 </style>

@@ -12,39 +12,31 @@
       <div>
         <h2>Enrolled Courses:</h2>
         <ul>
-          <li v-for="course in courses" :key="course.S">{{ course.S }}</li>
+          <li v-for="course in courses" :key="course">{{ course }}</li>
         </ul>
-
       </div>
     </div>
   </header>
 </template>
+
   
 <script setup>
-import { onMounted, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 
-// Define the reactive variables
-const title = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-});
+const title = computed(() => `Welcome ${username.value}`);
 
 const courses = ref([]); // This will hold the list of courses
 
+const route = useRoute(); // Initialize the route here
 const username = ref(route.query.userId); // Retrieve the passed username
-const route = useRoute();
-
-
-
 
 // Function to fetch courses from the API
 function listCourses() {
   let userId = username.value;
   let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${userId}`;
 
+  console.log(endpoint);
   fetch(endpoint)
     .then(response => {
       if (!response.ok) {
@@ -53,13 +45,20 @@ function listCourses() {
       return response.json();
     })
     .then(data => {
+      console.log(data.body);
       courses.value = data.body; // Assuming the Lambda function returns the data in the body attribute
     })
     .catch(error => {
       console.error('An error occurred:', error);
     });
 }
+
+// Call listCourses when the component is mounted
+onMounted(() => {
+  listCourses();
+});
 </script>
+
 
   
   <style>
