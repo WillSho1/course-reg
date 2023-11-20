@@ -51,9 +51,14 @@ def lambda_handler(event, context):
     )
     if ('Item' in course_item):
         #get items to return
-        location = course_item['Item'].get('Location', {'S': ''})
-        schedule = course_item['Item'].get('Schedule', {'M': {}})
-        studentlist = course_item['Item'].get('StudentList', {'L': []})
+        location = course_item['Item'].get('Location', {'S': ''}).get('S', '')
+        schedule = course_item['Item'].get('Schedule', {'M': {}}).get('M', {})
+        for day in schedule:
+            schedule[day] = schedule[day].get('S', '')
+        SList = course_item['Item'].get('StudentList', {'L': []}).get('L', [])
+        studentlist = []
+        for student in SList:
+            studentlist.append(student.get('S', ''))
         result = {}
         result['Location'] = location
         result['Schedule'] = schedule
