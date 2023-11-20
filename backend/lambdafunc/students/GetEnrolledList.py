@@ -42,10 +42,14 @@ def lambda_handler(event, context):
     if ('Item' in user_item):
         #get enrollment
         enrollment = user_item['Item'].get('Enrollment', {'L': []}).get('L', [])
+        returnlist = []
+        for cid in enrollment:
+            returnlist.append(cid.get('S', ''))
+
         return {
             'statusCode': 200,
             'headers': corsheaders,
-            'body': enrollment
+            'body': returnlist
         }
     else:
         return {

@@ -5,7 +5,7 @@
       <nav v-if="showLoginLink">
         <ul>
           <li class="centered">
-            <RouterLink to="/home">Go to login</RouterLink>
+            <RouterLink to="/home">Logout</RouterLink>
           </li>
         </ul>
       </nav>
