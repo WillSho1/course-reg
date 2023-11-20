@@ -5,7 +5,7 @@
       <nav>
         <ul>
           <li>
-            <RouterLink to="/studentcs">Go to Course Search</RouterLink>
+            <RouterLink to="/studentcs">Browse Courses</RouterLink>
           </li>
         </ul>
       </nav>
