@@ -1,19 +1,62 @@
 <template>
   <div>
+    <header>Select Subject to view Courses</header>
     <div v-for="(subject, index) in subjects" :key="index" class="subject-row">
       <div class="subject-title" @click="selectSubject(index)">
         {{ Object.keys(subject)[0] }} {{ selectedSubject === index ? '▲' : '▼' }}
       </div>
       <div v-if="selectedSubject === index" class="courses-list">
-        <h4>Courses for {{ Object.keys(subject)[0] }}</h4>
+        <h4 class="courses-header">Courses for {{ Object.keys(subject)[0] }}:</h4>
         <ul>
           <template v-if="Object.values(subject)[0].length === 0">
-            <li>None listed</li>
+            <li class="course-info">None listed</li>
           </template>
           <template v-else>
             <li v-for="(course, courseIndex) in Object.values(subject)[0]" :key="courseIndex">
-              {{ course.courseid }} - {{ course.name }}
-              <!--add description and prereqs-->
+              <div class="course-info">
+                <span class="course-id">{{ course.courseid }}</span>
+                <span class="course-name">{{ course.name }}</span>
+              </div>
+              <div class="course-details">
+                <p><strong>Description:</strong> {{ course.description }}</p>
+                <p v-if="course.prereqs && course.prereqs.length">
+                  <strong>Prerequisites: </strong>
+                  <span v-for="(prereq, prereqIndex) in course.prereqs" :key="prereqIndex">
+                    {{ prereq }}{{ prereqIndex < course.prereqs.length - 1 ? ', ' : '' }}
+                  </span>
+                </p>
+                <p v-else>
+                  <strong>Prerequisites: </strong>
+                  <span>None</span>
+                </p>
+                <p class="list-sections" @click="fetchSections(index, courseIndex, course.courseid)"><strong>
+                  List Sections {{ isSelectedCourse(index, courseIndex) ? '▲' : '▼' }}
+                </strong></p>
+                <div v-if="isSelectedCourse(index, courseIndex)">
+                  <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
+                    <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
+                      <div class="section-info">
+                        <div class="section-number">Section {{ section.Section }}</div>
+                        <div class="section-details">
+                          <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
+                          <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
+                          <p><strong>Location:</strong> {{ section.Location }}</p>
+                          <p><strong>Teacher Name:</strong> {{ section.TeacherName }}</p>
+                          <div class="schedule">
+                            <strong>Schedule:</strong>
+                            <ul>
+                              <li v-for="(value, day) in section.Schedule" :key="day">
+                                <span>{{ day }}:</span> {{ value }}
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </template>
+                  <template v-else>No sections available.</template>
+                </div>
+              </div>
             </li>
           </template>
         </ul>
@@ -28,37 +71,65 @@ export default {
     return {
       selectedSubject: null,
       subjects: [],
+      selectedCourses: [],  // Use an array to keep track of selected courses for each subject
+      savedsections: {},    //array to keep track of fetched sections
     };
   },
   created() {
     // Call your API function here
-    this.fetchDataFromApi();
+    this.fetchSubjectTable();
   },
   methods: {
-    fetchDataFromApi() {
-    let endpoint;
+    fetchSubjectTable() {
+      let endpoint;
+      endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
   
-    endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
-  
-    fetch(endpoint, {
-      method: 'GET',
-    })
-    .then(response => {
-        return response.json();
-    })
-    .then(data => {
+      fetch(endpoint, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
         if (data.statusCode == 200) {
-          console.log(data.body)
-          //console.log(data)
-          this.subjects = data.body
+          this.subjects = data.body;
+          this.selectedCourses = new Array(this.subjects.length).fill(null);
         }
       })
-    .catch(error => {
-      console.error('An error has occurred: ', error);
-    })
+      .catch(error => {
+        console.error('An error has occurred: ', error);
+      });
     },
     selectSubject(index) {
       this.selectedSubject = this.selectedSubject === index ? null : index;
+    },
+    selectCourse(subjectIndex, courseIndex) {
+      this.selectedCourses[subjectIndex] =
+        this.selectedCourses[subjectIndex] === courseIndex ? null : courseIndex;
+    },
+    fetchSections(subjectIndex, courseIndex, courseid) {
+      // Call selectCourse method to toggle course selection
+      this.selectCourse(subjectIndex, courseIndex);
+
+      //checks if the sections for course have yet to be fetched
+      if (!this.savedsections[courseid]) {
+        this.savedsections[courseid] = []
+        let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections?CourseID=${courseid}`;
+        fetch(endpoint, {
+          method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.statusCode == 200) {
+            console.log(data.body)
+            this.savedsections[courseid] = data.body
+          }
+        })
+        .catch(error => {
+          console.error('An error has occurred: ', error);
+        });
+      }
+    },
+    isSelectedCourse(subjectIndex, courseIndex) {
+      return this.selectedCourses[subjectIndex] === courseIndex;
     },
   },
 };
@@ -67,19 +138,81 @@ export default {
 <style scoped>
 .subject-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px;
+  flex-direction: column;  /* Changed to column */
+  align-items: flex-start;
   border: 1px solid #ccc;
   margin-bottom: 5px;
-  cursor: pointer;
 }
 
 .subject-title {
-  flex-grow: 1;
+  width: 100%;
+  cursor: pointer;
+  margin-left: 20px;  /* Adjust the indentation as needed */
 }
 
 .courses-list {
   margin-top: 10px;
 }
+
+.courses-header {
+  margin-left: 20px;  /* Adjust the indentation for "Courses for" */
+}
+
+.course-info {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 30px;  /* Increase the indentation for course info */
+  margin-bottom: 5px;
+}
+
+.course-id,
+.course-name {
+  font-weight: bold;
+}
+
+.course-details {
+  margin-left: 50px;  /* Increase the indentation for course details */
+}
+
+.list-sections {
+  margin-left: 50px;  /* Increase the indentation for course details */
+  cursor: pointer;
+}
+
+.course-details p {
+  margin: 5px 0;
+}
+
+.section-item {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.section-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-number {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.section-details {
+  flex-grow: 1;
+}
+
+.schedule {
+  margin-top: 10px;
+}
+
+.schedule ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.schedule li {
+  margin-left: 0;
+}
+
 </style>

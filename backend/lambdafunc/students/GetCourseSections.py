@@ -61,8 +61,21 @@ def lambda_handler(event, context):
         ExpressionAttributeValues={':val': {'S': courseid}},
         ProjectionExpression = '#courseid, #sec, #enr, #cap, #loc, #sched, #teachname'
     )
-    items = response.get('Items', [])
-    if len(items) == 0:
+    
+    #converting result to something usable by frontend
+    sectionsList = response.get('Items', [])
+    for section in sectionsList:
+        section['CourseID'] = section.get('CourseID', '').get('S', '')
+        section['Section'] = section.get('Section', '').get('N', '')
+        section['Enrollment'] = section.get('Enrollment', '').get('N', '')
+        section['Capacity'] = section.get('Capacity', '').get('N', '')
+        section['Location'] = section.get('Location', '').get('S', '')
+        section['Schedule'] = section.get('Schedule', '').get('M', '')
+        for day in section['Schedule']:
+            section['Schedule'][day] = section['Schedule'][day].get('S', '')
+        section['TeacherName'] = section.get('TeacherName', '').get('S', '')
+
+    if len(sectionsList) == 0:
         return {
             'statusCode': 400,
             'headers': corsheaders,
@@ -71,5 +84,5 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': corsheaders,
-        'body': json.dumps(items)
+        'body': sectionsList
     }
