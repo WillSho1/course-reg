@@ -33,9 +33,10 @@ const router = createRouter({
       component: StudentHomeView,
     },
     {
-      path: "/studentcs",
+      path: "/studentcs/:user",
       name: "studentcs",
-      component: StudentCourseSearchView
+      component: StudentCourseSearchView,
+      props: true,
     },
     {
       path: "/teacherhome",

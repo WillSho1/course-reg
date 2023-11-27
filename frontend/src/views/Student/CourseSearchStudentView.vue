@@ -36,7 +36,7 @@
                   <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
                     <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
                       <div class="section-info">
-                        <div class="section-number">Section {{ section.Section }}</div>
+                        <div class="section-number" @click="enrollCourse(course.courseid, section.Section, index, courseIndex)">Section {{ section.Section }}</div>
                         <div class="section-details">
                           <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
                           <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
@@ -66,7 +66,10 @@
 </template>
 
 <script>
+
+
 export default {
+  props: ['user'],
   data() {
     return {
       selectedSubject: null,
@@ -81,8 +84,7 @@ export default {
   },
   methods: {
     fetchSubjectTable() {
-      let endpoint;
-      endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
+      const endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
   
       fetch(endpoint, {
         method: 'GET',
@@ -131,6 +133,38 @@ export default {
     isSelectedCourse(subjectIndex, courseIndex) {
       return this.selectedCourses[subjectIndex] === courseIndex;
     },
+    enrollCourse(courseID, section, subjectIndex, courseIndex) {
+      let endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections';
+      fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify({
+          "CourseID": courseID,
+          "UserID": this.user,
+          "Section": section
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.statusCode == 200) {
+          console.log(data.body)
+          //reload sections
+          delete this.savedsections[courseID]
+          this.fetchSections(subjectIndex, courseIndex, courseID)
+          window.alert(data.body)
+        }
+        else {
+          console.log(data.body)
+          console.log(data.statusCode)
+          window.alert(`Enrollment failed: ${data.body}`)
+        }
+      })
+      .catch(error => {
+        console.error('An error has occurred: ', error);
+      });
+    }
   },
 };
 </script>
@@ -196,6 +230,24 @@ export default {
 .section-number {
   font-weight: bold;
   margin-right: 10px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
+.section-number:hover::after {
+  content: "Click to enroll";
+  position: absolute;
+  top: -25px; /* Adjust this value to move the tooltip above the section number */
+  right: 0; /* Adjust this value to move the tooltip to the top right */
+  background-color: #333;
+  color: #fff;
+  padding: 2px 5px; /* Adjust these values to make the tooltip smaller */
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 1;
 }
 
 .section-details {
