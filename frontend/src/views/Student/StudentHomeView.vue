@@ -70,7 +70,7 @@ async function dropCourse(courseId) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        'course-id-section': courseId,
+        'course_id_section': courseId,
         'UserID': username.value
       })
     });
@@ -80,7 +80,9 @@ async function dropCourse(courseId) {
     if (response.ok) {
       console.log(data);
       listCourses(); // Refresh the course list
+      alert(JSON.stringify(data.body, null, 2));
     } else {
+      alert(JSON.stringify(data.body, null, 2));
       throw new Error(data);
     }
   } catch (error) {
