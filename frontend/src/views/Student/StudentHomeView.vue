@@ -9,7 +9,11 @@
     <div class="course-list">
       <h3>Below are your enrolled courses:</h3>
       <ul>
-        <li v-for="course in courses" :key="course" class="course-item">{{ course }}</li>
+        <li v-for="course in courses" :key="course" class="course-item">
+          {{ course }}
+          <button @click="dropCourse(course)">Drop</button>
+          <button @click="getCourseInfo(course)">Get Info</button>
+        </li>
       </ul>
     </div>
   </header>
@@ -54,6 +58,52 @@ function listCourses() {
 onMounted(() => {
   listCourses();
 });
+
+async function dropCourse(courseId) {
+  try {
+    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'course-id-section': courseId,
+        'UserID': username.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log(data);
+      listCourses(); // Refresh the course list
+    } else {
+      throw new Error(data);
+    }
+  } catch (error) {
+    console.error('Error dropping course:', error);
+  }
+}
+
+async function getCourseInfo(courseIdSection) {
+  try {
+    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment/courseinfo?course-id-section=${courseIdSection}`, {
+      method: 'GET'
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log(data.body);
+      alert(JSON.stringify(data.body, null, 2)); // Display course info in a simple alert for now
+    } else {
+      throw new Error(data);
+    }
+  } catch (error) {
+    console.error('Error fetching course info:', error);
+  }
+}
+
 </script>
 
 
