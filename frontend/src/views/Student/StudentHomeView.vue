@@ -4,7 +4,7 @@
       <h1>{{ title }}</h1>
     </div>
     <div class="course-search">
-      <RouterLink to="/studentcs">Go to Course Search</RouterLink>
+      <RouterLink :to= "{ name: 'studentcs', params: { user: username } }">Course Search</RouterLink>
     </div>
     <div class="course-list">
       <h3>Below are your enrolled courses:</h3>
@@ -110,7 +110,6 @@ async function getCourseInfo(courseIdSection) {
 }
 
 </script>
-
 
 <style>
 /* General page styles */
