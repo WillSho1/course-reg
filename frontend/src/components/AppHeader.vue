@@ -6,6 +6,7 @@
         <ul>
           <li class="centered">
             <RouterLink to="/home">Logout</RouterLink>
+            <RouterLink v-if="$route.path.startsWith('/studentcs/')" :to="`/studenthome?userId=${$route.params.user}`">Homepage</RouterLink>
           </li>
         </ul>
       </nav>

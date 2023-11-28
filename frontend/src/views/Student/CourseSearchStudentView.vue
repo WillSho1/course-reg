@@ -1,6 +1,10 @@
 <template>
   <div>
-    <header>Select Subject to view Courses</header>
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Select Subject to View Courses</h1>
+      </div>
+    </header>
     <div v-for="(subject, index) in subjects" :key="index" class="subject-row">
       <div class="subject-title" @click="selectSubject(index)">
         {{ Object.keys(subject)[0] }} {{ selectedSubject === index ? '▲' : '▼' }}
@@ -29,38 +33,45 @@
                   <strong>Prerequisites: </strong>
                   <span>None</span>
                 </p>
-                <p class="list-sections" @click="fetchSections(index, courseIndex, course.courseid)"><strong>
-                  List Sections {{ isSelectedCourse(index, courseIndex) ? '▲' : '▼' }}
-                </strong></p>
-                <div v-if="isSelectedCourse(index, courseIndex)">
-                  <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
-                    <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
-                      <div class="section-info">
-                        <div class="section-number" @click="enrollCourse(course.courseid, section.Section, index, courseIndex)">Section {{ section.Section }}</div>
-                        <div class="section-details">
-                          <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
-                          <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
-                          <p><strong>Location:</strong> {{ section.Location }}</p>
-                          <p><strong>Teacher Name:</strong> {{ section.TeacherName }}</p>
-                          <div class="schedule">
-                            <strong>Schedule:</strong>
-                            <ul>
-                              <li v-for="(value, day) in section.Schedule" :key="day">
-                                <span>{{ day }}:</span> {{ value }}
-                              </li>
-                            </ul>
+                <div class="indented-box">
+                  <p class="list-sections" @click="fetchSections(index, courseIndex, course.courseid)">
+                    <strong>List Sections {{ isSelectedCourse(index, courseIndex) ? '▲' : '▼' }}</strong>
+                  </p>
+                  <div v-if="isSelectedCourse(index, courseIndex)">
+                    <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
+                      <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
+                        <div class="section-info">
+                          <div class="section-number" @click="enrollCourse(course.courseid, section.Section, index, courseIndex)">
+                            Section {{ section.Section }}
+                          </div>
+                          <div class="section-details">
+                            <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
+                            <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
+                            <p><strong>Location:</strong> {{ section.Location }}</p>
+                            <p><strong>Teacher Name:</strong> {{ section.TeacherName }}</p>
+                            <div class="schedule">
+                              <strong>Schedule:</strong>
+                              <ul>
+                                <li v-for="(value, day) in section.Schedule" :key="day">
+                                  <span>{{ day }}:</span> {{ value }}
+                                </li>
+                              </ul>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </li>
-                  </template>
-                  <template v-else>No sections available.</template>
+                      </li>
+                    </template>
+                    <template v-else>No sections available.</template>
+                  </div>
                 </div>
               </div>
             </li>
           </template>
         </ul>
       </div>
+    </div>
+    <div class="banner-image">
+      <img src="/uconn-banner.png" alt="UCONN Banner" />
     </div>
   </div>
 </template>
@@ -170,18 +181,59 @@ export default {
 </script>
 
 <style scoped>
+/* General page styles */
+body {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styles */
+.app-header {
+  background-color: #005792;
+  color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Course search styles */
+.course-search {
+  margin-top: 1rem;
+  padding: 0 2rem;
+}
+.course-search a {
+  color: #005792;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  font-size: 1.5rem;
+}
+
+/* Subject row styles */
 .subject-row {
   display: flex;
-  flex-direction: column;  /* Changed to column */
+  flex-direction: column;
   align-items: flex-start;
   border: 1px solid #ccc;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
 }
 
 .subject-title {
   width: 100%;
   cursor: pointer;
-  margin-left: 20px;  /* Adjust the indentation as needed */
+  margin-left: 10px;
+  font-size: 18px;
 }
 
 .courses-list {
@@ -189,13 +241,14 @@ export default {
 }
 
 .courses-header {
-  margin-left: 20px;  /* Adjust the indentation for "Courses for" */
+  margin-left: 10px;
+  font-size: 16px;
 }
 
 .course-info {
   display: flex;
   justify-content: space-between;
-  margin-left: 30px;  /* Increase the indentation for course info */
+  margin-left: 20px;
   margin-bottom: 5px;
 }
 
@@ -205,21 +258,19 @@ export default {
 }
 
 .course-details {
-  margin-left: 50px;  /* Increase the indentation for course details */
+  margin-left: 60px;
 }
 
 .list-sections {
-  margin-left: 50px;  /* Increase the indentation for course details */
+  margin-left: 30px;
   cursor: pointer;
-}
-
-.course-details p {
-  margin: 5px 0;
+  font-weight: bold;
 }
 
 .section-item {
   list-style-type: none;
   padding-left: 0;
+  margin-top: 10px;
 }
 
 .section-info {
@@ -230,21 +281,18 @@ export default {
 .section-number {
   font-weight: bold;
   margin-right: 10px;
-  position: relative;
-  display: inline-block;
   cursor: pointer;
   text-decoration: underline;
 }
 
-
 .section-number:hover::after {
   content: "Click to enroll";
   position: absolute;
-  top: -25px; /* Adjust this value to move the tooltip above the section number */
-  right: 0; /* Adjust this value to move the tooltip to the top right */
+  top: -25px;
+  right: 0;
   background-color: #333;
   color: #fff;
-  padding: 2px 5px; /* Adjust these values to make the tooltip smaller */
+  padding: 2px 5px;
   border-radius: 5px;
   white-space: nowrap;
   z-index: 1;
@@ -265,6 +313,6 @@ export default {
 
 .schedule li {
   margin-left: 0;
+  font-weight: bold;
 }
-
 </style>
