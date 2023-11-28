@@ -4,7 +4,7 @@
       <h1>{{ title }}</h1>
     </div>
     <div class="course-search">
-      <RouterLink to="/studentcs">Course Search</RouterLink>
+      <RouterLink to="/studentcs">Go to Course Search</RouterLink>
     </div>
     <div class="course-list">
       <h3>Below are your enrolled courses:</h3>
@@ -17,6 +17,9 @@
       </ul>
     </div>
   </header>
+  <div class="banner-image">
+      <img src="/uconn-banner.png" alt="UCONN Banner" />
+    </div>
 </template>
 
 
@@ -127,13 +130,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
 }
 
 /* Course search styles */
 .course-search {
-  margin-top: 1rem;
+  margin-top: 2rem;
   padding: 0 2rem;
 }
 .course-search a {
@@ -141,14 +144,15 @@ body {
   text-decoration: none;
   font-weight: bold;
   background-color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  font-size: 1.5rem;
 }
 
 /* Course list styles */
 .course-list {
-  margin-top: 1rem;
-  padding: 0 2rem;
+  margin-top: 2rem;
+  padding: 0 .5rem;
 }
 .course-list h3 {
   color: white;
@@ -160,6 +164,13 @@ body {
   border-radius: 5px;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0;
+}
+
+.banner-image img {
+  width: 100%; /* Set the width as needed */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove any extra space below the image */
+  margin: 1rem 0; /* Add some space around the image */
 }
 
 </style>
