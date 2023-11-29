@@ -19,4 +19,4 @@ app
       },
     })
   )
-app.mount("#root");
+app.mount("#app");
