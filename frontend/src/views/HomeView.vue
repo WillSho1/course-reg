@@ -1,96 +1,37 @@
 <template>
-  <header class = "home-header">
+  <header class="home-header">
+    <div id="root"></div>
     <div>
       <h1>{{ "Section 1 Group 7 Course System" }}</h1>
     </div>
   </header>
   <main class="home">
-      <div class="login-section">
-          <h2>Welcome to the Course Portal</h2>
+    <div class="login-section">
+      <h2>Welcome to the Course Portal</h2>
 
-          <div class="credentials">
-              <input type="text" placeholder="Username" v-model="username">
-              <input type="password" placeholder="Password" v-model="password">
-          </div>
-
-          <div class="login-options">
-              <button @click="loginAs('Student')">Login as Student</button>
-              <button @click="loginAs('Admin')">Login as Admin</button>
-              <button @click="loginAs('Teacher')">Login as Teacher</button>
-          </div>
-      </div>
-      <!-- For Login Failures -->
-      <div class="modal" v-if="showModal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <!--<h3>Login Failed</h3>-->
-        <p>{{ errorMessage }}</p>
+      <!-- Auth0 login and signup buttons -->
+      <div>
+        <loginButton/>
+        <!--<button @click="loginWithRole('Admin')">Login/Signup as Admin</button>
+        <button @click="loginWithRole('Teacher')">Login/Signup as Teacher</button>-->
       </div>
     </div>
+
+    <!-- For Login Failures
+    <div class="modal" v-if="showModal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>-->
   </main>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router"; // Import useRouter
+import loginButton from '../components/buttons/login-button.vue';
+import { useAuth0 } from '@auth0/auth0-vue';
 
-const router = useRouter(); // Initialize the router
-const username = ref("");
-const password = ref("");
-
-function loginAs(role) {
-  let endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/login';
-
-  fetch(endpoint, {
-    method: 'POST',
-    body: JSON.stringify({
-      "UserID": username.value,
-      "Type": role,
-      "Password": password.value
-    }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      if (data.statusCode === 200) {
-        // Successful login
-        console.log(data.body);
-
-        // Redirect based on role
-        if (role == 'Student') {
-          // Use router.push with query parameters
-          router.push({ path: '/studenthome', query: { userId: username.value } });
-        } else if (role == 'Teacher') {
-          router.push('/teacherhome');
-        } else if (role == 'Admin') {
-          router.push('/adminhome');
-        }
-      } else {
-        // Login failure
-        console.log(data.body);
-        openModal(data.body);
-      }
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
-    });
-}
-
-const showModal = ref(false);
-const errorMessage = ref("");
-
-function openModal(message) {
-  errorMessage.value = message;
-  showModal.value = true;
-}
-
-function closeModal() {
-  showModal.value = false;
-}
+//const { isAuthenticated } = useAuth0();
 
 </script>
 
