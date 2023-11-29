@@ -1,65 +1,86 @@
 <template>
-  <header class="app-header">
-    <div class="header-content">
-      <h1>{{ title }}</h1>
-    </div>
-    <div class="course-search">
-      <RouterLink :to= "{ name: 'studentcs', params: { user: username } }">Course Search</RouterLink>
-    </div>
-    <div class="course-list">
-      <h3>Below are your enrolled courses:</h3>
-      <ul>
-        <li v-for="course in courses" :key="course" class="course-item">
-          {{ course }}
-          <button @click="dropCourse(course)">Drop</button>
-          <button @click="getCourseInfo(course)">Get Info</button>
-        </li>
-      </ul>
-    </div>
-  </header>
-  <div class="banner-image">
-      <img src="/uconn-banner.png" alt="UCONN Banner" />
-    </div>
+  <template v-if="isAuthenticated">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Welcome {{ user.nickname }}!</h1>
+      </div>
+      <div class="course-search">
+        <RouterLink to="/studentcs">Course Search</RouterLink>
+      </div>
+      <div class="course-list">
+        <h3>Below are your enrolled courses:</h3>
+        <ul>
+          <li v-for="course in courses" :key="course" class="course-item">
+            {{ course }}
+            <button @click="dropCourse(course)">Drop</button>
+            <button @click="getCourseInfo(course)">Get Info</button>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div class="banner-image">
+        <img src="/uconn-banner.png" alt="UCONN Banner" />
+      </div>
+  </template>
 </template>
 
 
   
 <script setup>
+import { useAuth0 } from '@auth0/auth0-vue';
 import { computed, onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 
-const title = computed(() => `Welcome ${username.value}`);
-
+let { isAuthenticated, user } = useAuth0();
 const courses = ref([]); // This will hold the list of courses
 
-const route = useRoute(); // Initialize the route here
-const username = ref(route.query.userId); // Retrieve the passed username
+/*
+// Watch for changes in the user object 
+watch(user, (newUser) => {   
+  if (newUser && newUser.nickname) {     
+  // User information is available, perform actions as needed     
+    let isStudent = newUser['dev-qtfdl3mznfynnex6.us.auth0.com/type'] == 's' ? true : false  
+    //setup isStudent     
+    let email = newUser.email     
+    console.log(email)       
+  }
+});*/
+
 
 // Function to fetch courses from the API
-function listCourses() {
-  let userId = username.value;
-  let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${userId}`;
-
-  console.log(endpoint);
-  fetch(endpoint)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log(data.body);
-      courses.value = data.body; // Assuming the Lambda function returns the data in the body attribute
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
-    });
+function listCourses(user) {
+  console.log(user)
+  if (user && user.nickname) {
+    let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${user.nickname}`;
+    console.log("USER:")
+    console.log(user.nickname)
+    fetch(endpoint)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.statusCode == '200'){
+        console.log(data.body);
+        courses.value = data.body; // Assuming the Lambda function returns the data in the body attribute
+        }
+        else {
+          console.log(data.body);
+          window.alert(data.body);
+        }
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
+  }
 }
 
 // Call listCourses when the component is mounted
-onMounted(() => {
-  listCourses();
+onMounted( () => {
+  let { user } = useAuth0();
+  listCourses(user);
 });
 
 async function dropCourse(courseId) {
@@ -71,7 +92,7 @@ async function dropCourse(courseId) {
       },
       body: JSON.stringify({
         'course_id_section': courseId,
-        'UserID': username.value
+        'UserID': userID
       })
     });
 

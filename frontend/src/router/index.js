@@ -6,6 +6,7 @@ import HomeView from "../views/HomeView.vue";
 import StudentHomeView from "../views/Student/StudentHomeView.vue"
 import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vue" 
 import TeacherView from "../views/Teacher/TeacherView.vue"
+import callback from "../views/callback.vue"
 
 
 const router = createRouter({
@@ -33,10 +34,10 @@ const router = createRouter({
       component: StudentHomeView,
     },
     {
-      path: "/studentcs/:user",
+      path: "/studentcs",///:user",
       name: "studentcs",
       component: StudentCourseSearchView,
-      props: true,
+      //props: true,
     },
     {
       path: "/teacherhome",
@@ -46,6 +47,11 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones
       redirect: '/home',
+    },
+    {
+      path: "/callback",
+      name: "callback",
+      component: callback
     },
   ],
 });
