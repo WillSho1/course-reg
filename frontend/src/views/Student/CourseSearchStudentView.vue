@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 
 const selectedSubject = ref(null);
@@ -88,16 +88,7 @@ const savedsections = ref({}); //array to keep track of fetched sections
 const { isAuthenticated, user } = useAuth0();
 const courses = ref([]); // This will hold the list of courses
 
-let userID = 'not changed';
-
-watch(user, (newUser) => {   
-  if (newUser && newUser.nickname) { 
-    console.log(newUser)
-    userID = newUser;
-    //wait for info to start page
-    fetchSubjectTable()
-  }
-});
+let userID = null;
 
 const fetchSubjectTable = () => {
   const endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
@@ -116,6 +107,15 @@ const fetchSubjectTable = () => {
     console.error('An error has occurred: ', error);
   });
 };
+
+watch(user, async (newUser) => {   
+  if (newUser && newUser.nickname) { 
+    console.log(newUser)
+    userID = newUser;
+    //wait for info to start page
+    fetchSubjectTable()
+  }
+}, { immediate: true });
 
 const selectSubject = (index) => {
   selectedSubject.value = selectedSubject.value === index ? null : index;

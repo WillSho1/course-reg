@@ -36,12 +36,12 @@ const courses = ref([]); // This will hold the list of courses
 
 let userID = '';
 
-watch(user, (newUser) => {   
+watch(user, async (newUser) => {   
   if (newUser && newUser.nickname) { 
     userID = newUser;
     listCourses();
   }
-});
+}, { immediate: true });
 
 // Function to fetch courses from the API
 function listCourses() {
