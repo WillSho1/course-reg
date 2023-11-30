@@ -28,32 +28,25 @@
   
 <script setup>
 import { useAuth0 } from '@auth0/auth0-vue';
-import { computed, onMounted, ref } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import { RouterLink } from "vue-router";
 
-let { isAuthenticated, user } = useAuth0();
+const { isAuthenticated, user } = useAuth0();
 const courses = ref([]); // This will hold the list of courses
 
-/*
-// Watch for changes in the user object 
-watch(user, (newUser) => {   
-  if (newUser && newUser.nickname) {     
-  // User information is available, perform actions as needed     
-    let isStudent = newUser['dev-qtfdl3mznfynnex6.us.auth0.com/type'] == 's' ? true : false  
-    //setup isStudent     
-    let email = newUser.email     
-    console.log(email)       
-  }
-});*/
+let userID = '';
 
+watch(user, (newUser) => {   
+  if (newUser && newUser.nickname) { 
+    userID = newUser;
+    listCourses();
+  }
+});
 
 // Function to fetch courses from the API
-function listCourses(user) {
-  console.log(user)
-  if (user && user.nickname) {
-    let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${user.nickname}`;
-    console.log("USER:")
-    console.log(user.nickname)
+function listCourses() {
+  if (userID && userID.nickname) {
+    let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${userID.nickname}`;
     fetch(endpoint)
       .then(response => {
         if (!response.ok) {
@@ -77,12 +70,6 @@ function listCourses(user) {
   }
 }
 
-// Call listCourses when the component is mounted
-onMounted( () => {
-  let { user } = useAuth0();
-  listCourses(user);
-});
-
 async function dropCourse(courseId) {
   try {
     const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment`, {
@@ -92,7 +79,7 @@ async function dropCourse(courseId) {
       },
       body: JSON.stringify({
         'course_id_section': courseId,
-        'UserID': userID
+        'UserID': userID.nickname
       })
     });
 
@@ -109,6 +96,7 @@ async function dropCourse(courseId) {
   } catch (error) {
     console.error('Error dropping course:', error);
   }
+  listCourses()
 }
 
 async function getCourseInfo(courseIdSection) {

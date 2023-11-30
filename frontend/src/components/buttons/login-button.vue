@@ -1,3 +1,5 @@
+<!--this is from the example in lab9-->
+
 <template>
     <button class="button__login" @click="handleLogin">Log In</button>
   </template>
@@ -10,7 +12,7 @@
   const handleLogin = () => {
     loginWithRedirect({
       appState: {
-        target: "/studenthome",
+        target: "/callback",
       },
     });
   };

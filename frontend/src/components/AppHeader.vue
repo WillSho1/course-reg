@@ -4,9 +4,9 @@
     <div>
       <nav v-if="showLoginLink">
         <ul>
-          <li class="centered">
-            <RouterLink to="/home">Logout</RouterLink>
-            <RouterLink v-if="$route.path.startsWith('/studentcs/')" :to="`/studenthome?userId=${$route.params.user}`">Homepage</RouterLink>
+          <li>
+            <!--<RouterLink v-if="route==='/studentcs'" :class="left" :to="`/studenthome`">&#9664</RouterLink>-->
+            <logoutButton/>
           </li>
         </ul>
       </nav>
@@ -17,6 +17,7 @@
 <script setup>
 import { RouterLink, useRoute } from "vue-router";
 import { ref, watch } from 'vue';
+import logoutButton from './buttons/logout-button.vue';
 
 const title = ref("Section 1 Group 7 Course System");
 const route = useRoute();

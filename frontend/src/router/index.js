@@ -45,13 +45,13 @@ const router = createRouter({
       component: TeacherView
     },
     {
-      path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones
-      redirect: '/home',
-    },
-    {
       path: "/callback",
       name: "callback",
       component: callback
+    },
+    {
+      path: '/:pathMatch(.*)*', // This will catch all routes that don't match the above ones
+      redirect: '/home',
     },
   ],
 });

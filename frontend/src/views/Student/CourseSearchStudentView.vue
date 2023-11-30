@@ -76,108 +76,115 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue';
+import { useAuth0 } from '@auth0/auth0-vue';
 
+const selectedSubject = ref(null);
+const subjects = ref([]);
+const selectedCourses = ref([]); // Use an array to keep track of selected courses for each subject
+const savedsections = ref({}); //array to keep track of fetched sections
 
-export default {
-  props: ['user'],
-  data() {
-    return {
-      selectedSubject: null,
-      subjects: [],
-      selectedCourses: [],  // Use an array to keep track of selected courses for each subject
-      savedsections: {},    //array to keep track of fetched sections
-    };
-  },
-  created() {
-    // Call your API function here
-    this.fetchSubjectTable();
-  },
-  methods: {
-    fetchSubjectTable() {
-      const endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
-  
-      fetch(endpoint, {
-        method: 'GET',
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.statusCode == 200) {
-          this.subjects = data.body;
-          this.selectedCourses = new Array(this.subjects.length).fill(null);
-        }
-      })
-      .catch(error => {
-        console.error('An error has occurred: ', error);
-      });
-    },
-    selectSubject(index) {
-      this.selectedSubject = this.selectedSubject === index ? null : index;
-    },
-    selectCourse(subjectIndex, courseIndex) {
-      this.selectedCourses[subjectIndex] =
-        this.selectedCourses[subjectIndex] === courseIndex ? null : courseIndex;
-    },
-    fetchSections(subjectIndex, courseIndex, courseid) {
-      // Call selectCourse method to toggle course selection
-      this.selectCourse(subjectIndex, courseIndex);
+const { isAuthenticated, user } = useAuth0();
+const courses = ref([]); // This will hold the list of courses
 
-      //checks if the sections for course have yet to be fetched
-      if (!this.savedsections[courseid]) {
-        this.savedsections[courseid] = []
-        let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections?CourseID=${courseid}`;
-        fetch(endpoint, {
-          method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.statusCode == 200) {
-            console.log(data.body)
-            this.savedsections[courseid] = data.body
-          }
-        })
-        .catch(error => {
-          console.error('An error has occurred: ', error);
-        });
-      }
-    },
-    isSelectedCourse(subjectIndex, courseIndex) {
-      return this.selectedCourses[subjectIndex] === courseIndex;
-    },
-    enrollCourse(courseID, section, subjectIndex, courseIndex) {
-      let endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections';
-      fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify({
-          "CourseID": courseID,
-          "UserID": this.user,
-          "Section": section
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.statusCode == 200) {
-          console.log(data.body)
-          //reload sections
-          delete this.savedsections[courseID]
-          this.fetchSections(subjectIndex, courseIndex, courseID)
-          window.alert(data.body)
-        }
-        else {
-          console.log(data.body)
-          console.log(data.statusCode)
-          window.alert(`Enrollment failed: ${data.body}`)
-        }
-      })
-      .catch(error => {
-        console.error('An error has occurred: ', error);
-      });
+let userID = 'not changed';
+
+watch(user, (newUser) => {   
+  if (newUser && newUser.nickname) { 
+    console.log(newUser)
+    userID = newUser;
+    //wait for info to start page
+    fetchSubjectTable()
+  }
+});
+
+const fetchSubjectTable = () => {
+  const endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
+
+  fetch(endpoint, {
+    method: 'GET',
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.statusCode === 200) {
+      subjects.value = data.body;
+      selectedCourses.value = new Array(subjects.value.length).fill(null);
     }
-  },
+  })
+  .catch(error => {
+    console.error('An error has occurred: ', error);
+  });
 };
+
+const selectSubject = (index) => {
+  selectedSubject.value = selectedSubject.value === index ? null : index;
+};
+
+const selectCourse = (subjectIndex, courseIndex) => {
+  selectedCourses.value[subjectIndex] = selectedCourses.value[subjectIndex] === courseIndex ? null : courseIndex;
+};
+
+const fetchSections = (subjectIndex, courseIndex, courseid) => {
+  // Call selectCourse method to toggle course selection
+  selectCourse(subjectIndex, courseIndex);
+
+  //checks if the sections for course have yet to be fetched
+  if (!savedsections.value[courseid]) {
+    savedsections.value[courseid] = [];
+    let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections?CourseID=${courseid}`;
+    fetch(endpoint, {
+      method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.statusCode === 200) {
+        console.log(data.body)
+        savedsections.value[courseid] = data.body;
+      }
+    })
+    .catch(error => {
+      console.error('An error has occurred: ', error);
+    });
+  }
+};
+
+const isSelectedCourse = (subjectIndex, courseIndex) => {
+  return selectedCourses.value[subjectIndex] === courseIndex;
+};
+
+const enrollCourse = (courseID, section, subjectIndex, courseIndex) => {
+  let endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search/courses/sections';
+  fetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({
+      "CourseID": courseID,
+      "UserID": userID.nickname,
+      "Section": section
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.statusCode === 200) {
+      //reload sections
+      delete savedsections.value[courseID];
+      fetchSections(subjectIndex, courseIndex, courseID);
+      window.alert(data.body);
+    }
+    else {
+      console.log(data.body);
+      console.log(data.statusCode);
+      window.alert(`Enrollment failed: ${data.body}`);
+    }
+  })
+  .catch(error => {
+    console.error('An error has occurred: ', error);
+  });
+};
+
 </script>
 
 <style scoped>

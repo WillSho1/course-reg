@@ -1,3 +1,5 @@
+<!--this is from the example in lab9-->
+
 <template>
     <button class="button__logout" @click="handleLogout">Log Out</button>
   </template>
