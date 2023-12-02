@@ -1,5 +1,3 @@
-<!-- NotAuthorized.vue -->
-
 <template>
   <div class="not-authorized-container">
     <h2>Access Denied</h2>
@@ -9,6 +7,7 @@
 </template>
 
 <script>
+//page to be displayed when a user tries to access something they are not authorized to
 export default {
   name: 'NotAuthorized',
 };

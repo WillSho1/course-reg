@@ -1,55 +1,56 @@
-<template>
-  <template v-if="isAuthenticated">
-    <header class="app-header">
-      <div class="header-content">
-        <h1>Welcom {{ userID.nickname }}!</h1>
-      </div>
-      <div class="course-list">
-        <h3>Below are the courses you are teaching this semester:</h3>
-        <ul>
-          <li v-for="course in courses" :key="course" class="course-item">
-            {{ course }}
-            <button @click="getCourseInfo(course)">Get Info</button>
-          </li>
-        </ul>
-      </div>
-    </header>
-  </template>
+<template v-if="isAuthenticated">
+  <header class="app-header">
+    <div class="header-content">
+      <h1>Welcom {{ userID.nickname }}!</h1>
+    </div>
+    <div class="course-list">
+      <h3>Below are the courses you are teaching this semester:</h3>
+      <ul>
+        <li v-for="course in courses" :key="course" class="course-item">
+          {{ course }}
+          <button @click="getCourseInfo(course)">Get Info</button>
+        </li>
+      </ul>
+    </div>
+  </header>
 </template>
 
-
-  
 <script setup>
-import { computed, onMounted, ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth0 } from '@auth0/auth0-vue';
 
+//init Auth0, router, course list
 const { isAuthenticated, user } = useAuth0();
 const router = useRouter();
-const courses = ref([]); // This will hold the list of courses
+const courses = ref([]);
 
+//init userID and role - metadata for the user
 let userID = '';
 let role = null;
 
+//watching for auth0 update - this is necessary to get user info and track authorization
 watch(user, async (newUser) => {   
-  if (newUser && newUser.nickname) { 
+  if (newUser && newUser.nickname) {
+    //store info and Role metadata
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
+    //check page authorization
     if (role != 'Teacher' || !isAuthenticated) {
         router.push('/not-authorized');
         return;
     }
+    //if authorized list their courses/start page
     listCourses();
   }
 }, { immediate: true });
 
-// Function to fetch courses from the API
+//API call to list courses the teacher is assigned to
 function listCourses() {
   let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment?UserID=${userID.nickname}`;
-
-  console.log(endpoint);
   fetch(endpoint)
     .then(response => {
       if (!response.ok) {
@@ -58,17 +59,17 @@ function listCourses() {
       return response.json();
     })
     .then(data => {
-      console.log(data.body);
-      courses.value = data.body; // Assuming the Lambda function returns the data in the body attribute
+      courses.value = data.body; //store the courses
     })
     .catch(error => {
       console.error('An error occurred:', error);
     });
 }
 
-async function getCourseInfo(courseIdSection) {
+//API call to get additional information about a particular course
+async function getCourseInfo(courseIDSection) {
   try {
-    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment/courseinfo?course-id-section=${courseIdSection}`, {
+    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment/courseinfo?course-id-section=${courseIDSection}`, {
       method: 'GET'
     });
 
@@ -84,9 +85,7 @@ async function getCourseInfo(courseIdSection) {
     console.error('Error fetching course info:', error);
   }
 }
-
 </script>
-
 
 <style>
 /* General page styles */

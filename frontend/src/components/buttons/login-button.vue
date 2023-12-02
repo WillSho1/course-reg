@@ -1,4 +1,4 @@
-<!--this is from the example in lab9-->
+<!--this is copied from the lab9 Auth0 example-->
 
 <template>
     <button class="button__login" @click="handleLogin">Log In</button>

@@ -1,27 +1,25 @@
-<template>
-  <template v-if="isAuthenticated">
-    <header class="app-header">
-      <div class="header-content">
-        <h1>Welcome {{ user.nickname }}!</h1>
-      </div>
-      <div class="course-search">
-        <RouterLink to="/studentcs">Course Search</RouterLink>
-      </div>
-      <div class="course-list">
-        <h3>Below are your enrolled courses:</h3>
-        <ul>
-          <li v-for="course in courses" :key="course" class="course-item">
-            {{ course }}
-            <button @click="dropCourse(course)">Drop</button>
-            <button @click="getCourseInfo(course)">Get Info</button>
-          </li>
-        </ul>
-      </div>
-    </header>
-    <div class="banner-image">
-        <img src="/uconn-banner.png" alt="UCONN Banner" />
-      </div>
-  </template>
+<template v-if="isAuthenticated">
+  <header class="app-header">
+    <div class="header-content">
+      <h1>Welcome {{ user.nickname }}!</h1>
+    </div>
+    <div class="course-search">
+      <RouterLink to="/studentcs">Course Search</RouterLink>
+    </div>
+    <div class="course-list">
+      <h3>Below are your enrolled courses:</h3>
+      <ul>
+        <li v-for="course in courses" :key="course" class="course-item">
+          {{ course }}
+          <button @click="dropCourse(course)">Drop</button>
+          <button @click="getCourseInfo(course)">Get Info</button>
+        </li>
+      </ul>
+    </div>
+  </header>
+  <div class="banner-image">
+      <img src="/uconn-banner.png" alt="UCONN Banner" />
+    </div>
 </template>
 
 
@@ -31,28 +29,35 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import { ref, watch, nextTick } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
+//Auth0, router, course list
 const { isAuthenticated, user } = useAuth0();
 const router = useRouter();
-const courses = ref([]); // This will hold the list of courses
+const courses = ref([]);
 
-let userID = null;
+//info from Auth0
+let userID = '';
 let role = null;
 
+//watching for auth0 update - this is necessary to get user info and track authorization
 watch(user, async (newUser) => {   
   if (newUser && newUser.nickname) { 
+    //store info and Role metadata
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
+    //check page authorization
     if (role != 'Student' || !isAuthenticated) {
         router.push('/not-authorized');
         return;
     }
+    //start page
     listCourses();
   }
 }, { immediate: true });
 
-// Function to fetch courses from the API
+//API call to get list of enrolled courses
 function listCourses() {
   if (userID && userID.nickname) {
     let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment?UserID=${userID.nickname}`;
@@ -66,7 +71,8 @@ function listCourses() {
       .then(data => {
         if (data.statusCode == '200'){
         console.log(data.body);
-        courses.value = data.body; // Assuming the Lambda function returns the data in the body attribute
+        //store data
+        courses.value = data.body;
         }
         else {
           console.log(data.body);
@@ -79,6 +85,7 @@ function listCourses() {
   }
 }
 
+//API call to drop a selected course
 async function dropCourse(courseId) {
   try {
     const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment`, {
@@ -97,6 +104,7 @@ async function dropCourse(courseId) {
     if (response.ok) {
       console.log(data);
       listCourses(); // Refresh the course list
+      //alert based on result - string passed from lambda
       alert(JSON.stringify(data.body, null, 2));
     } else {
       alert(JSON.stringify(data.body, null, 2));
@@ -108,9 +116,10 @@ async function dropCourse(courseId) {
   listCourses()
 }
 
-async function getCourseInfo(courseIdSection) {
+//API call to get more course information
+async function getCourseInfo(courseIDSection) {
   try {
-    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment/courseinfo?course-id-section=${courseIdSection}`, {
+    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/enrollment/courseinfo?course-id-section=${courseIDSection}`, {
       method: 'GET'
     });
 

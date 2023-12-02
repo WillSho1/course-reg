@@ -15,6 +15,7 @@
 </template>
 
 <script setup>
+//basic login page to redirect to auth0 login - used to be a functional static login page
 import loginButton from '../components/buttons/login-button.vue';
 </script>
 
