@@ -124,23 +124,21 @@ async function getCourseInfo(courseIdSection) {
 
 
 <style>
-/* General page styles */
+
+
 body {
   font-family: 'Arial', sans-serif;
   color: #333;
   margin: 0;
   padding: 0;
+  max-width: 100vw; 
+  overflow-x: hidden;
 }
 
 /* Course list styles */
 .teacher-course-list {
   margin-top: 1rem;
   padding: 0 .5rem;
-}
-.teacher-course-list h3 {
-  color: white;
-  font-size: 1.25rem;
-  font-weight: bold;
 }
 .teacher-course-list h2 {
   color: white;
@@ -155,17 +153,15 @@ body {
   margin: 0.5rem 0;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Added for spacing between course name and info */
 }
 
 .teacher-course-info {
-  flex: 1; 
-  display: flex; 
-  justify-content: center; 
-  flex-direction: column; 
-  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start of the flex container */
   font-size: 1.25rem;
   font-weight: bold;
-  margin-left: 82rem;
 }
 
 .teacher-course-info h4 {
@@ -174,14 +170,14 @@ body {
 
 .teacher-course-name {
   font-size: 2.5rem;
-  white-space: nowrap; 
-  margin-right: auto; 
+  white-space: nowrap;
   font-weight: bolder;
 }
 .teacher-divider {
-  height: 6px; 
-  background-color: #fff; 
-  margin: 1rem -2rem; 
+  height: 6px;
+  background-color: #fff;
+  margin: 1rem -2rem;
   width: 200%; 
 }
+
 </style>
