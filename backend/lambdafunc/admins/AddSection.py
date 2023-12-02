@@ -24,19 +24,24 @@ client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
     course_id = event.get("CourseID")
-    title = event.get("Title")
-    description = event.get("Description")
-    prereqs = event.get("Prerequisites", [])
     capacity = event.get("Capacity")
     section = event.get("Section")
+    enrollment = event.get("Enrollment")
+    location = event.get("Location")
+    schedule = event.get("Schedule")
+    teacher_id = event.get("TeacherID")
 
-    if not all([course_id, title, description, capacity, section]):
+    # Validate input data
+    if not all([course_id, capacity, section, enrollment, location, schedule, teacher_id]):
         return response(400, 'Missing required course details')
+
+    # Validate section is a number
     try:
         section = int(section)
     except ValueError:
         return response(400, 'Section must be a number')
 
+    # Check if the course already exists
     existing_course = client.get_item(
         TableName='Courses',
         Key={
@@ -48,15 +53,18 @@ def lambda_handler(event, context):
     if 'Item' in existing_course:
         return response(400, f'Course {course_id} Section {section} already exists')
 
+    # Add the new course to the Courses table
     client.put_item(
         TableName='Courses',
         Item={
             'CourseID': {'S': course_id},
-            'Section': {'N': str(section)}, 
-            'Title': {'S': title},
-            'Description': {'S': description},
-            'Prerequisites': {'L': [{'S': prereq} for prereq in prereqs]},
-            'Capacity': {'N': str(capacity)}
+            'Section': {'N': str(section)},
+            'Capacity': {'N': str(capacity)},
+            'Enrollment': {'N': str(enrollment)},
+            'Location': {'S': location},
+            'Schedule': {'M': schedule},
+            'TeacherID': {'S': teacher_id},
+            'StudentList': {'L': []}  # Initializing StudentList as an empty list
         }
     )
 
