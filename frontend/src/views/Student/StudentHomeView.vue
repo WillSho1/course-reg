@@ -9,20 +9,24 @@
     <div class="divider"></div>
 
     <div class="course-list">
-    <h3>Below are your enrolled courses:</h3>
+    <h2>Below are your enrolled courses:</h2>
     <ul>
       <li v-for="course in courses" :key="course" class="course-item">
         <span class="course-name">{{ course }}</span>
         <div class="course-info" v-if="courseInfo[course]">
           <ul>
             <li v-if="courseInfo[course].Location">
-              Location: {{ courseInfo[course].Location }}
+            <h4>Location:</h4> {{ courseInfo[course].Location }}
             </li>
+            <br />
             <li v-if="courseInfo[course].TeacherName">
-              TeacherName: {{ courseInfo[course].TeacherName }}
+              <h4>TeacherName:</h4> {{ courseInfo[course].TeacherName }}
             </li>
             <li v-if="courseInfo[course].Schedule">
-              <strong>Schedule:</strong>
+              <br />
+              <h4>
+              Schedule:
+            </h4>
               <ul>
                 <li v-for="(time, day) in courseInfo[course].Schedule" :key="day">
                   {{ day }}: {{ time }}
@@ -236,6 +240,10 @@ body {
   font-weight: bold;
 }
 
+.course-info h4 {
+  font-size: 1.5rem;
+}
+
 .course-item button {
   background-color: #005792;
   color: #fff;
@@ -257,9 +265,9 @@ body {
   padding: 0 .5rem;
 }
 
-.course-list h3 {
+.course-list h2 {
   color: white;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
