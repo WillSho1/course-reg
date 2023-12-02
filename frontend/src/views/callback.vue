@@ -43,6 +43,9 @@ watch(user,async (newUser) => {
         } else if (role == 'Student') {
             router.push('/studenthome');
         }
+        else if (role == 'Admin') {
+            router.push('/adminhome');
+        }
     }
 }, { immediate: true });
 
