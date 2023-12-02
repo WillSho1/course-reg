@@ -21,7 +21,7 @@
 .button__logout {
   background-color: #000000; 
   color: white; 
-  padding: 15px 32px; 
+  padding: 15px 50px; 
   text-align: center; 
   text-decoration: none; 
   display: inline-block;

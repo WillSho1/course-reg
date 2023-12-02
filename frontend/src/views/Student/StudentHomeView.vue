@@ -2,10 +2,11 @@
   <header class="app-header">
     <div class="header-content">
       <h1>Welcome {{ user.nickname }}!</h1>
+      <div class="course-search">
+        <RouterLink to="/studentcs">Course Search</RouterLink>
+      </div>
     </div>
-    <div class="course-search">
-      <RouterLink to="/studentcs">Course Search</RouterLink>
-    </div>
+    <div class="divider"></div>
     <div class="course-list">
       <h3>Below are your enrolled courses:</h3>
       <ul>
@@ -18,9 +19,10 @@
     </div>
   </header>
   <div class="banner-image">
-      <img src="/uconn-banner.png" alt="UCONN Banner" />
-    </div>
+    <img src="/uconn-banner.png" alt="UCONN Banner" />
+  </div>
 </template>
+
 
 
   
@@ -154,6 +156,12 @@ body {
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+.header-content h1 {
+  color:#fff;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+}
+
 .header-content {
   display: flex;
   justify-content: space-between;
@@ -164,9 +172,10 @@ body {
 
 /* Course search styles */
 .course-search {
-  margin-top: 2rem;
   padding: 0 2rem;
+  margin-bottom: 1rem;
 }
+
 .course-search a {
   color: #005792;
   text-decoration: none;
@@ -179,14 +188,16 @@ body {
 
 /* Course list styles */
 .course-list {
-  margin-top: 2rem;
+  margin-top: 1rem;
   padding: 0 .5rem;
 }
+
 .course-list h3 {
   color: white;
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: bold;
 }
+
 .course-item {
   background-color: #e0e0e0;
   border-radius: 5px;
@@ -194,11 +205,32 @@ body {
   margin: 0.5rem 0;
 }
 
-.banner-image img {
-  width: 100%; /* Set the width as needed */
-  height: auto; /* Maintain aspect ratio */
-  display: block; /* Remove any extra space below the image */
-  margin: 1rem 0; /* Add some space around the image */
+.course-item button {
+  background-color: #005792; /* Button background color */
+  color: #fff; /* Button text color */
+  border: none; /* Remove border */
+  padding: 0.5rem 1rem; /* Padding around text */
+  margin: 0.25rem; /* Margin for spacing */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 1rem; /* Font size */
+  transition: background-color 0.3s; /* Transition for hover effect */
 }
 
+.course-item button:hover {
+  background-color: #003d5b; /* Darker background on hover */
+}
+.banner-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+}
+
+.divider {
+  height: 4px; 
+  background-color: #fff; 
+  margin: 1rem -2rem; 
+  width: 200%; 
+}
 </style>
