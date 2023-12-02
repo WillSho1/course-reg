@@ -38,7 +38,7 @@ watch(route, (newRoute) => {
 /* give the header itself a background color, a border, and add some padding to the content */
 .app-header {
   background-color: #007BFF; /* Blue background */
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 5px solid #fff;
   padding: 1rem;
   text-align: center;
 }

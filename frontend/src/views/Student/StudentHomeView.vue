@@ -7,16 +7,34 @@
       </div>
     </div>
     <div class="divider"></div>
+
     <div class="course-list">
-      <h3>Below are your enrolled courses:</h3>
-      <ul>
-        <li v-for="course in courses" :key="course" class="course-item">
-          {{ course }}
-          <button @click="dropCourse(course)">Drop</button>
-          <button @click="getCourseInfo(course)">Get Info</button>
-        </li>
-      </ul>
-    </div>
+    <h3>Below are your enrolled courses:</h3>
+    <ul>
+      <li v-for="course in courses" :key="course" class="course-item">
+        <span class="course-name">{{ course }}</span>
+        <div class="course-info" v-if="courseInfo[course]">
+          <ul>
+            <li v-if="courseInfo[course].Location">
+              Location: {{ courseInfo[course].Location }}
+            </li>
+            <li v-if="courseInfo[course].TeacherName">
+              TeacherName: {{ courseInfo[course].TeacherName }}
+            </li>
+            <li v-if="courseInfo[course].Schedule">
+              <strong>Schedule:</strong>
+              <ul>
+                <li v-for="(time, day) in courseInfo[course].Schedule" :key="day">
+                  {{ day }}: {{ time }}
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <button @click="dropCourse(course)">Drop</button>
+      </li>
+    </ul>
+  </div>
   </header>
   <div class="banner-image">
     <img src="/uconn-banner.png" alt="UCONN Banner" />
@@ -35,6 +53,8 @@ import { RouterLink, useRouter } from "vue-router";
 const { isAuthenticated, user } = useAuth0();
 const router = useRouter();
 const courses = ref([]);
+const courseInfo = ref({});
+
 
 //info from Auth0
 let userID = '';
@@ -71,10 +91,14 @@ function listCourses() {
         return response.json();
       })
       .then(data => {
-        if (data.statusCode == '200'){
-        console.log(data.body);
-        //store data
-        courses.value = data.body;
+        if (data.statusCode == '200') {
+          console.log(data.body);
+          courses.value = data.body;
+
+          // Automatically call getCourseInfo for each course
+          courses.value.forEach(course => {
+            getCourseInfo(course);
+          });
         }
         else {
           console.log(data.body);
@@ -128,8 +152,8 @@ async function getCourseInfo(courseIDSection) {
     const data = await response.json();
 
     if (response.ok) {
-      console.log(data.body);
-      alert(JSON.stringify(data.body, null, 2)); // Display course info in a simple alert for now
+      // Store course info
+      courseInfo.value[courseIDSection] = data.body;
     } else {
       throw new Error(data);
     }
@@ -137,6 +161,7 @@ async function getCourseInfo(courseIDSection) {
     console.error('Error fetching course info:', error);
   }
 }
+
 
 </script>
 
@@ -170,7 +195,7 @@ body {
   font-weight: bold;
 }
 
-/* Course search styles */
+
 .course-search {
   padding: 0 2rem;
   margin-bottom: 1rem;
@@ -183,10 +208,50 @@ body {
   background-color: #fff;
   padding: 1rem 2rem;
   border-radius: 4px;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
+}
+.course-item {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
 }
 
-/* Course list styles */
+.course-name {
+  font-size: 2.5rem;
+  white-space: nowrap; 
+  margin-right: auto; 
+  font-weight: bolder;
+}
+
+.course-info {
+  flex: 1; 
+  display: flex; 
+  justify-content: center; 
+  flex-direction: column; 
+  padding: 0 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.course-item button {
+  background-color: #005792;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 2rem;
+  margin-left: 9rem;
+}
+
+.course-item button:hover {
+  background-color: #003d5b;
+}
+
+
 .course-list {
   margin-top: 1rem;
   padding: 0 .5rem;
@@ -198,28 +263,6 @@ body {
   font-weight: bold;
 }
 
-.course-item {
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  padding: 0.5rem 1rem;
-  margin: 0.5rem 0;
-}
-
-.course-item button {
-  background-color: #005792; /* Button background color */
-  color: #fff; /* Button text color */
-  border: none; /* Remove border */
-  padding: 0.5rem 1rem; /* Padding around text */
-  margin: 0.25rem; /* Margin for spacing */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  font-size: 1rem; /* Font size */
-  transition: background-color 0.3s; /* Transition for hover effect */
-}
-
-.course-item button:hover {
-  background-color: #003d5b; /* Darker background on hover */
-}
 .banner-image img {
   width: 100%;
   height: auto;
@@ -227,8 +270,9 @@ body {
   margin: 1rem 0;
 }
 
+
 .divider {
-  height: 4px; 
+  height: 6px; 
   background-color: #fff; 
   margin: 1rem -2rem; 
   width: 200%; 
