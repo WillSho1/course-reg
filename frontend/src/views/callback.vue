@@ -29,7 +29,7 @@ watch(user,async (newUser) => {
             router.push('/studenthome');
         }
     }
-});
+}, { immediate: true });
 
 </script>
 

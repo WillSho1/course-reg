@@ -28,17 +28,26 @@
   
 <script setup>
 import { useAuth0 } from '@auth0/auth0-vue';
-import { ref, watch } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, watch, nextTick } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
 const { isAuthenticated, user } = useAuth0();
+const router = useRouter();
 const courses = ref([]); // This will hold the list of courses
 
-let userID = '';
+let userID = null;
+let role = null;
 
 watch(user, async (newUser) => {   
   if (newUser && newUser.nickname) { 
     userID = newUser;
+    role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (role != 'Student' || !isAuthenticated) {
+        router.push('/not-authorized');
+        return;
+    }
     listCourses();
   }
 }, { immediate: true });

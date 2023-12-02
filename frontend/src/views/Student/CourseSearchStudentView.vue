@@ -1,87 +1,91 @@
 <template>
-  <div>
-    <header class="app-header">
-      <div class="header-content">
-        <h1>Select Subject to View Courses</h1>
-      </div>
-    </header>
-    <div v-for="(subject, index) in subjects" :key="index" class="subject-row">
-      <div class="subject-title" @click="selectSubject(index)">
-        {{ Object.keys(subject)[0] }} {{ selectedSubject === index ? '▲' : '▼' }}
-      </div>
-      <div v-if="selectedSubject === index" class="courses-list">
-        <h4 class="courses-header">Courses for {{ Object.keys(subject)[0] }}:</h4>
-        <ul>
-          <template v-if="Object.values(subject)[0].length === 0">
-            <li class="course-info">None listed</li>
-          </template>
-          <template v-else>
-            <li v-for="(course, courseIndex) in Object.values(subject)[0]" :key="courseIndex">
-              <div class="course-info">
-                <span class="course-id">{{ course.courseid }}</span>
-                <span class="course-name">{{ course.name }}</span>
-              </div>
-              <div class="course-details">
-                <p><strong>Description:</strong> {{ course.description }}</p>
-                <p v-if="course.prereqs && course.prereqs.length">
-                  <strong>Prerequisites: </strong>
-                  <span v-for="(prereq, prereqIndex) in course.prereqs" :key="prereqIndex">
-                    {{ prereq }}{{ prereqIndex < course.prereqs.length - 1 ? ', ' : '' }}
-                  </span>
-                </p>
-                <p v-else>
-                  <strong>Prerequisites: </strong>
-                  <span>None</span>
-                </p>
-                <div class="indented-box">
-                  <p class="list-sections" @click="fetchSections(index, courseIndex, course.courseid)">
-                    <strong>List Sections {{ isSelectedCourse(index, courseIndex) ? '▲' : '▼' }}</strong>
+  <template v-if="isAuthenticated">
+    <div>
+      <header class="app-header">
+        <div class="header-content">
+          <h1>Select Subject to View Courses</h1>
+        </div>
+      </header>
+      <div v-for="(subject, index) in subjects" :key="index" class="subject-row">
+        <div class="subject-title" @click="selectSubject(index)">
+          {{ Object.keys(subject)[0] }} {{ selectedSubject === index ? '▲' : '▼' }}
+        </div>
+        <div v-if="selectedSubject === index" class="courses-list">
+          <h4 class="courses-header">Courses for {{ Object.keys(subject)[0] }}:</h4>
+          <ul>
+            <template v-if="Object.values(subject)[0].length === 0">
+              <li class="course-info">None listed</li>
+            </template>
+            <template v-else>
+              <li v-for="(course, courseIndex) in Object.values(subject)[0]" :key="courseIndex">
+                <div class="course-info">
+                  <span class="course-id">{{ course.courseid }}</span>
+                  <span class="course-name">{{ course.name }}</span>
+                </div>
+                <div class="course-details">
+                  <p><strong>Description:</strong> {{ course.description }}</p>
+                  <p v-if="course.prereqs && course.prereqs.length">
+                    <strong>Prerequisites: </strong>
+                    <span v-for="(prereq, prereqIndex) in course.prereqs" :key="prereqIndex">
+                      {{ prereq }}{{ prereqIndex < course.prereqs.length - 1 ? ', ' : '' }}
+                    </span>
                   </p>
-                  <div v-if="isSelectedCourse(index, courseIndex)">
-                    <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
-                      <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
-                        <div class="section-info">
-                          <div class="section-number" @click="enrollCourse(course.courseid, section.Section, index, courseIndex)">
-                            Section {{ section.Section }}
-                          </div>
-                          <div class="section-details">
-                            <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
-                            <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
-                            <p><strong>Location:</strong> {{ section.Location }}</p>
-                            <p><strong>Teacher Name:</strong> {{ section.TeacherName }}</p>
-                            <div class="schedule">
-                              <strong>Schedule:</strong>
-                              <ul>
-                                <li v-for="(value, day) in section.Schedule" :key="day">
-                                  <span>{{ day }}:</span> {{ value }}
-                                </li>
-                              </ul>
+                  <p v-else>
+                    <strong>Prerequisites: </strong>
+                    <span>None</span>
+                  </p>
+                  <div class="indented-box">
+                    <p class="list-sections" @click="fetchSections(index, courseIndex, course.courseid)">
+                      <strong>List Sections {{ isSelectedCourse(index, courseIndex) ? '▲' : '▼' }}</strong>
+                    </p>
+                    <div v-if="isSelectedCourse(index, courseIndex)">
+                      <template v-if="savedsections[course.courseid] && savedsections[course.courseid].length > 0">
+                        <li v-for="(section) in savedsections[course.courseid]" :key="section.Section" class="section-item">
+                          <div class="section-info">
+                            <div class="section-number" @click="enrollCourse(course.courseid, section.Section, index, courseIndex)">
+                              Section {{ section.Section }}
+                            </div>
+                            <div class="section-details">
+                              <p><strong>Enrollment:</strong> {{ section.Enrollment }}</p>
+                              <p><strong>Capacity:</strong> {{ section.Capacity }}</p>
+                              <p><strong>Location:</strong> {{ section.Location }}</p>
+                              <p><strong>Teacher Name:</strong> {{ section.TeacherName }}</p>
+                              <div class="schedule">
+                                <strong>Schedule:</strong>
+                                <ul>
+                                  <li v-for="(value, day) in section.Schedule" :key="day">
+                                    <span>{{ day }}:</span> {{ value }}
+                                  </li>
+                                </ul>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </li>
-                    </template>
-                    <template v-else>No sections available.</template>
+                        </li>
+                      </template>
+                      <template v-else>No sections available.</template>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          </template>
-        </ul>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+      <div class="banner-image">
+        <img src="/uconn-banner.png" alt="UCONN Banner" />
       </div>
     </div>
-    <div class="banner-image">
-      <img src="/uconn-banner.png" alt="UCONN Banner" />
-    </div>
-  </div>
+  </template>
 </template>
 
 <script setup>
 import { ref, watch, nextTick, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
+import { useRouter } from "vue-router";
 
 const selectedSubject = ref(null);
 const subjects = ref([]);
+const router = useRouter();
 const selectedCourses = ref([]); // Use an array to keep track of selected courses for each subject
 const savedsections = ref({}); //array to keep track of fetched sections
 
@@ -89,6 +93,7 @@ const { isAuthenticated, user } = useAuth0();
 const courses = ref([]); // This will hold the list of courses
 
 let userID = null;
+let role = null;
 
 const fetchSubjectTable = () => {
   const endpoint = 'https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/studenthomepage/search';
@@ -110,9 +115,15 @@ const fetchSubjectTable = () => {
 
 watch(user, async (newUser) => {   
   if (newUser && newUser.nickname) { 
-    console.log(newUser)
     userID = newUser;
+    role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
     //wait for info to start page
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (role != 'Student' || !isAuthenticated) {
+        router.push('/not-authorized');
+        return;
+    }
     fetchSubjectTable()
   }
 }, { immediate: true });
