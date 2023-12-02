@@ -1,6 +1,6 @@
 <template v-if="isAuthenticated">
     <header class="app-header">
-      <div class="header-content">
+      <div class="admin-header-content">
         <h1>{{ title }}</h1>
         <div class="load-subjects">
           <button @click="fetchSubjects">Load Subjects and Courses</button>
@@ -9,7 +9,7 @@
     </header>
     <div class="subjects-container" v-if="loaded">
       <div v-for="(courses, subject) in subjects" :key="subject" class="subject">
-        <h2>{{ subject }}</h2>
+        <h2>{{ "Subject: " + subject }}</h2>
         <ul v-if="courses.length">
           <li v-for="course in courses" :key="course.courseid">
             {{ course.courseid.S }} - {{ course.Name.S }}
@@ -85,7 +85,7 @@ watch(user, async (newUser) => {
     box-shadow: 0 2px 4px;
     text-align: center;
   }
-  .header-content {
+  .admin-header-content {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,6 +99,7 @@ watch(user, async (newUser) => {
   .subject {
     margin: 1rem auto; 
     max-width: 600px; 
+    font-weight: bolder;
   }
   .subject h2 {
     font-size: 3rem;
