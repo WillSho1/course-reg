@@ -3,13 +3,13 @@
     <div class="header-content">
       <h1>Welcome {{ Name }}!</h1>
     </div>
-    <div class="divider"></div>
-    <div class="course-list">
+    <div class="teacher-divider"></div>
+    <div class="teacher-course-list">
       <h2>Below are your enrolled courses:</h2>
       <ul>
-        <li v-for="course in courses" :key="course" class="course-item">
-          <span class="course-name">{{ course }}</span>
-          <div class="course-info" v-if="courseInfo[course]">
+        <li v-for="course in courses" :key="course" class="teacher-course-item">
+          <span class="teacher-course-name">{{ course }}</span>
+          <div class="teacher-course-info" v-if="courseInfo[course]">
           <ul>
             <li v-if="courseInfo[course].Location">
               <h4>Location:</h4> {{ courseInfo[course].Location }}
@@ -132,39 +132,56 @@ body {
   padding: 0;
 }
 
-/* Header styles */
-.app-header {
-  background-color: #005792;
-  color: #fff;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.header-content h1 {
-  color: #fff;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000
-}
-
-
 /* Course list styles */
-.course-list {
+.teacher-course-list {
   margin-top: 1rem;
-  padding: 0 2rem;
+  padding: 0 .5rem;
 }
-.course-list h3 {
+.teacher-course-list h3 {
   color: white;
   font-size: 1.25rem;
   font-weight: bold;
 }
-.course-item {
+.teacher-course-list h2 {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.teacher-course-item {
   background-color: #e0e0e0;
   border-radius: 5px;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
 }
 
-.course-info{
-  margin-left: 50rem;
+.teacher-course-info {
+  flex: 1; 
+  display: flex; 
+  justify-content: center; 
+  flex-direction: column; 
+  padding: 0 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-left: 82rem;
 }
 
+.teacher-course-info h4 {
+  font-size: 1.5rem;
+}
+
+.teacher-course-name {
+  font-size: 2.5rem;
+  white-space: nowrap; 
+  margin-right: auto; 
+  font-weight: bolder;
+}
+.teacher-divider {
+  height: 6px; 
+  background-color: #fff; 
+  margin: 1rem -2rem; 
+  width: 200%; 
+}
 </style>
