@@ -91,7 +91,7 @@ def lambda_handler(event, context):
                 'S': courseid
             },
             'Section': {
-                'N': section
+                'S': section
             }
         }
     )
@@ -117,7 +117,7 @@ def lambda_handler(event, context):
                 'S': courseid
             },
             'Section': {
-                'N': section
+                'S': section
             }
         },
         UpdateExpression='SET Enrollment = :enrollment, StudentList = :student_list',

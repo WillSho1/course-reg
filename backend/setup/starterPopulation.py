@@ -110,8 +110,8 @@ with open('resources/subjects.json', 'w') as json_file:
 
 print("subjects.json file created with starter subjects.")"""
 
-batchfunction("Subjects", "resources/EXsubjects.json")
-batchfunction("Subjects", "resources/subjects.json")
+#batchfunction("Subjects", "resources/EXsubjects.json")
+#batchfunction("Subjects", "resources/subjects.json")
 batchfunction("Courses", "resources/EXsubj1234.json")
-batchfunction("Users", "resources/EXusers.json")
-batchfunction("Users", "resources/users.json")
+#batchfunction("Users", "resources/EXusers.json")
+#batchfunction("Users", "resources/users.json")
