@@ -16,7 +16,12 @@
             </li>
               <br />
               <li v-if="courseInfo[course].StudentList">
-                <h4>Student List:</h4> {{ courseInfo[course].StudentList }}
+                <h4>Student List:</h4> 
+                <ul>
+                  <li v-for="(student) in courseInfo[course].StudentList" :key="student">
+                    {{ student + "," }}
+                  </li>
+                </ul>
               </li>
               <li v-if="courseInfo[course].Schedule">
                 <br />
