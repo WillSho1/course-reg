@@ -8,6 +8,7 @@ import StudentCourseSearchView from "../views/Student/CourseSearchStudentView.vu
 import TeacherView from "../views/Teacher/TeacherView.vue"
 import callback from "../views/callback.vue"
 import NotAuthorized from "../views/NotAuthorized.vue"
+import AdminView from "../views/Admin/AdminView.vue"
 
 
 const router = createRouter({
@@ -44,6 +45,11 @@ const router = createRouter({
       path: "/teacherhome",
       name: "teacherhome",
       component: TeacherView
+    },
+    {
+      path: "/adminhome",
+      name: "adminhome",
+      component: AdminView
     },
     {
       path: "/callback",

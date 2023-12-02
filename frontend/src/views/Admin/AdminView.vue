@@ -1,0 +1,132 @@
+<template v-if="isAuthenticated">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>{{ title }}</h1>
+        <div class="load-subjects">
+          <button @click="fetchSubjects">Load Subjects and Courses</button>
+        </div>
+      </div>
+    </header>
+    <div class="subjects-container" v-if="loaded">
+      <div v-for="(courses, subject) in subjects" :key="subject" class="subject">
+        <h2>{{ subject }}</h2>
+        <ul v-if="courses.length">
+          <li v-for="course in courses" :key="course.courseid">
+            {{ course.courseid.S }} - {{ course.Name.S }}
+          </li>
+        </ul>
+        <p v-else>No courses available for this subject</p>
+      </div>
+    </div>
+    <div class="banner-image">
+      <img src="/uconn-banner.png" alt="UCONN Banner" />
+    </div>
+  </template>
+  
+  
+  
+  <script setup>
+import { useAuth0 } from '@auth0/auth0-vue';
+import { ref, watch, onMounted, nextTick } from "vue";
+import { useRouter } from "vue-router";
+
+const { isAuthenticated, user } = useAuth0();
+const router = useRouter();
+const subjects = ref({});
+const loaded = ref(false);
+const title = ref('');
+
+watch(user, async (newUser) => {
+  if (newUser) {
+    role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    Name = newUser['dev-75fp6aop37uung0c.us.auth0.com/full_name'];
+
+    if (role !== 'Admin' || !isAuthenticated.value) {
+      router.push('/not-authorized');
+      return;
+    }
+
+    // Load subjects after authentication and role verification
+    onMounted(fetchSubjects);
+  }
+}, { immediate: true });
+
+  // Function to fetch subjects and courses from the Lambda function
+  async function fetchSubjects() {
+    try {
+      const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/adminhomepage`, {
+        method: 'GET'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      const data = JSON.parse(result.body);
+      console.log("Parsed data:", data);
+      subjects.value = data;
+      loaded.value = true; // Set loaded to true after fetching data
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  }
+  </script>
+  
+    
+  <style>
+  body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  .app-header {
+    color: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px;
+    text-align: center;
+  }
+  .header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  .subjects-container {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  .subject {
+    margin: 1rem auto; 
+    max-width: 600px; 
+  }
+  .subject h2 {
+    font-size: 3rem;
+  }
+  .banner-image {
+    display: flex;
+    justify-content: center; 
+  }
+  .banner-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .load-subjects button {
+    color: #005792;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    font-size: 2.5rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .load-subjects button:hover {
+    background-color: #e0e0e0;
+  }
+
+  </style>
