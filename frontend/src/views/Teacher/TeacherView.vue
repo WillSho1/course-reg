@@ -3,83 +3,112 @@
     <div class="header-content">
       <h1>Welcome {{ Name }}!</h1>
     </div>
+    <div class="divider"></div>
     <div class="course-list">
-      <h3>Below are the courses you are teaching this semester:</h3>
+      <h2>Below are your enrolled courses:</h2>
       <ul>
         <li v-for="course in courses" :key="course" class="course-item">
-          {{ course }}
-          <button @click="getCourseInfo(course)">Get Info</button>
+          <span class="course-name">{{ course }}</span>
+          <div class="course-info" v-if="courseInfo[course]">
+          <ul>
+            <li v-if="courseInfo[course].Location">
+              <h4>Location:</h4> {{ courseInfo[course].Location }}
+            </li>
+              <br />
+              <li v-if="courseInfo[course].StudentList">
+                <h4>Student List:</h4> {{ courseInfo[course].StudentList }}
+              </li>
+              <li v-if="courseInfo[course].Schedule">
+                <br />
+                <h4>Schedule:</h4>
+                <ul>
+                  <li v-for="(time, day) in courseInfo[course].Schedule" :key="day">
+                    {{ day }}: {{ time }}
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </li>
       </ul>
     </div>
   </header>
+  <div class="banner-image">
+    <img src="/uconn-banner.png" alt="UCONN Banner" />
+  </div>
 </template>
 
-<script setup>
-import { ref, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
-import { useAuth0 } from '@auth0/auth0-vue';
 
-//init Auth0, router, course list
+<script setup>
+import { useAuth0 } from '@auth0/auth0-vue';
+import { ref, watch, nextTick } from "vue";
+import {  useRouter } from "vue-router";
+
 const { isAuthenticated, user } = useAuth0();
 const router = useRouter();
 const courses = ref([]);
+const courseInfo = ref({});
 
-//init userID and role - metadata for the user
 let userID = '';
 let role = null;
 let Name = '';
 
-//watching for auth0 update - this is necessary to get user info and track authorization
 watch(user, async (newUser) => {   
-  if (newUser && newUser.nickname) {
-    //store info and Role metadata
+  if (newUser && newUser.nickname) { 
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+<<<<<<< HEAD
     Name = newUser['dev-75fp6aop37uung0c.us.auth0.com/full_name'];
     //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
+=======
+>>>>>>> 39bf1c2 (Finalized teacher homepage)
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
-    //check page authorization
     if (role != 'Teacher' || !isAuthenticated) {
         router.push('/not-authorized');
         return;
     }
-    //if authorized list their courses/start page
     listCourses();
   }
 }, { immediate: true });
 
-//API call to list courses the teacher is assigned to
 function listCourses() {
-  let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment?UserID=${userID.nickname}`;
-  fetch(endpoint)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      courses.value = data.body; //store the courses
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
-    });
+  if (userID && userID.nickname) {
+    let endpoint = `https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment?UserID=${userID.nickname}`;
+    fetch(endpoint)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.statusCode == '200') {
+          courses.value = data.body;
+          courses.value.forEach(course => {
+            getCourseInfo(course);
+          });
+        }
+        else {
+          alert(data.body);
+        }
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+      });
+  }
 }
 
-//API call to get additional information about a particular course
-async function getCourseInfo(courseIDSection) {
+async function getCourseInfo(courseIdSection) {
   try {
-    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment/courseinfo?course-id-section=${courseIDSection}`, {
+    const response = await fetch(`https://74ym2fsc17.execute-api.us-east-1.amazonaws.com/ProjAPI/teacherhomepage/enrollment/courseinfo?course-id-section=${courseIdSection}`, {
       method: 'GET'
     });
-
     const data = await response.json();
-
     if (response.ok) {
-      console.log(data.body);
-      alert(JSON.stringify(data.body, null, 2)); // Display course info in a simple alert for now
+      // Assign the data to courseInfo
+      courseInfo.value[courseIdSection] = JSON.parse(data.body);
+
     } else {
       throw new Error(data);
     }
@@ -87,7 +116,9 @@ async function getCourseInfo(courseIDSection) {
     console.error('Error fetching course info:', error);
   }
 }
+
 </script>
+
 
 <style>
 /* General page styles */
@@ -105,27 +136,12 @@ body {
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 2rem;
-  font-weight: bold;
+
+.header-content h1 {
+  color: #fff;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000
 }
 
-/* Course search styles */
-.course-search {
-  margin-top: 1rem;
-  padding: 0 2rem;
-}
-.course-search a {
-  color: #005792;
-  text-decoration: none;
-  font-weight: bold;
-  background-color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-}
 
 /* Course list styles */
 .course-list {
@@ -142,6 +158,10 @@ body {
   border-radius: 5px;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0;
+}
+
+.course-info{
+  margin-left: 50rem;
 }
 
 </style>
