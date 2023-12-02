@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-//basic login page to redirect to auth0 login - used to be a functional static login page
 import loginButton from '../components/buttons/login-button.vue';
 </script>
 
@@ -35,11 +34,11 @@ import loginButton from '../components/buttons/login-button.vue';
 .login-section {
   text-align: center;
   padding: 1rem;
-  padding-top: 5%;
+  padding-top: -100%; /* Increased padding-top to move the text higher */
 }
 
 .login-section h2 {
-  font-size: 2.5rem; 
+  font-size: 3.5rem; /* Increased font size for larger text */
   margin-bottom: 1.5rem;
 }
 

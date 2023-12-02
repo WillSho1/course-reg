@@ -16,3 +16,23 @@
       }
     });
   </script>
+
+<style>
+.button__logout {
+  background-color: #000000; 
+  color: white; 
+  padding: 15px 32px; 
+  text-align: center; 
+  text-decoration: none; 
+  display: inline-block;
+  font-size: 16px; 
+  margin: 4px;
+  cursor: pointer; 
+  border: none; 
+  border-radius: 10px; 
+}
+
+.button__logout:hover {
+  background-color: #007BFF;
+}
+</style>
