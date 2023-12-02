@@ -1,7 +1,7 @@
 <template v-if="isAuthenticated">
   <header class="app-header">
     <div class="header-content">
-      <h1>Welcome {{ user.nickname }}!</h1>
+      <h1>Welcome {{ Name }}!</h1>
       <div class="course-search">
         <RouterLink to="/studentcs">Course Search</RouterLink>
       </div>
@@ -22,9 +22,6 @@
     <img src="/uconn-banner.png" alt="UCONN Banner" />
   </div>
 </template>
-
-
-
   
 <script setup>
 import { useAuth0 } from '@auth0/auth0-vue';
@@ -39,6 +36,7 @@ const courses = ref([]);
 //info from Auth0
 let userID = '';
 let role = null;
+let Name = '';
 
 //watching for auth0 update - this is necessary to get user info and track authorization
 watch(user, async (newUser) => {   
@@ -46,6 +44,7 @@ watch(user, async (newUser) => {
     //store info and Role metadata
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    Name = newUser['dev-75fp6aop37uung0c.us.auth0.com/full_name'];
     //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
