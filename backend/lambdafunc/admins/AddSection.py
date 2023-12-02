@@ -1,7 +1,7 @@
-""" Use Case: An admin adding a course to a database.
+""" Use Case: An admin adding a section to a database.
     Users: Admins
     Type: POST
-    Endpoint: ./adminhomepage/courses/add
+    Endpoint: ./adminhomepage/sections/add
     Provide in request:
         Body:
         {
@@ -23,30 +23,36 @@ import boto3
 client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
-    # Extract course details from the event
     course_id = event.get("CourseID")
     title = event.get("Title")
     description = event.get("Description")
     prereqs = event.get("Prerequisites", [])
     capacity = event.get("Capacity")
+    section = event.get("Section")
 
-    # Basic validation
-    if not all([course_id, title, description, capacity]):
+    if not all([course_id, title, description, capacity, section]):
         return response(400, 'Missing required course details')
+    try:
+        section = int(section)
+    except ValueError:
+        return response(400, 'Section must be a number')
 
-    # Check if course already exists
     existing_course = client.get_item(
         TableName='Courses',
-        Key={'CourseID': {'S': course_id}}
+        Key={
+            'CourseID': {'S': course_id},
+            'Section': {'N': str(section)}
+        }
     )
-    if 'Item' in existing_course:
-        return response(400, f'Course {course_id} already exists')
 
-    # Add the course to the Courses table
+    if 'Item' in existing_course:
+        return response(400, f'Course {course_id} Section {section} already exists')
+
     client.put_item(
         TableName='Courses',
         Item={
             'CourseID': {'S': course_id},
+            'Section': {'N': str(section)}, 
             'Title': {'S': title},
             'Description': {'S': description},
             'Prerequisites': {'L': [{'S': prereq} for prereq in prereqs]},
@@ -54,7 +60,7 @@ def lambda_handler(event, context):
         }
     )
 
-    return response(200, f'Course {course_id} added successfully')
+    return response(200, f'Course {course_id} Section {section} added successfully')
 
 def response(status_code, message):
     return {
