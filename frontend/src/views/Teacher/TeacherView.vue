@@ -1,7 +1,7 @@
 <template v-if="isAuthenticated">
   <header class="app-header">
     <div class="header-content">
-      <h1>Welcom {{ userID.nickname }}!</h1>
+      <h1>Welcome {{ Name }}!</h1>
     </div>
     <div class="course-list">
       <h3>Below are the courses you are teaching this semester:</h3>
@@ -28,6 +28,7 @@ const courses = ref([]);
 //init userID and role - metadata for the user
 let userID = '';
 let role = null;
+let Name = '';
 
 //watching for auth0 update - this is necessary to get user info and track authorization
 watch(user, async (newUser) => {   
@@ -35,6 +36,7 @@ watch(user, async (newUser) => {
     //store info and Role metadata
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
+    Name = newUser['dev-75fp6aop37uung0c.us.auth0.com/full_name'];
     //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
