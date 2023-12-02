@@ -57,11 +57,9 @@ watch(user, async (newUser) => {
   if (newUser && newUser.nickname) { 
     userID = newUser;
     role = newUser['dev-75fp6aop37uung0c.us.auth0.com/Role'];
-<<<<<<< HEAD
     Name = newUser['dev-75fp6aop37uung0c.us.auth0.com/full_name'];
     //waiting here as a bug fix - originally would have to refresh page to have auth0 information show
-=======
->>>>>>> 39bf1c2 (Finalized teacher homepage)
+
     await nextTick();
     await new Promise(resolve => setTimeout(resolve, 0));
     if (role != 'Teacher' || !isAuthenticated) {
