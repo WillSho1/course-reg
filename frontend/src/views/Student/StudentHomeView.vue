@@ -7,7 +7,6 @@
       </div>
     </div>
     <div class="divider"></div>
-
     <div class="course-list">
     <h2>Below are your enrolled courses:</h2>
     <ul>

@@ -98,9 +98,9 @@ def lambda_handler(event, context):
     if "Item" in course_item:
         #get information to change
         studentlist = course_item['Item'].get('StudentList', {'L': []}).get('L', [])
-        #enrollment = course_item['Item'].get('Enrollment', {}).get('N', '0')
+        enrollment = course_item['Item'].get('Enrollment', {}).get('N', '0')
         student_list = [student for student in studentlist if student['S'] != user]
-        enrollment = len(student_list)
+        enrollment = int(enrollment) - 1
     else:
         return {
             #should never enter this
