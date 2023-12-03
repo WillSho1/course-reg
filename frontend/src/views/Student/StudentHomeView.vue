@@ -219,6 +219,7 @@ body {
   margin: 0.5rem 0;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .course-name {
@@ -236,6 +237,8 @@ body {
   padding: 0 1rem;
   font-size: 1.25rem;
   font-weight: bold;
+  width: 500px;
+  margin: 0 auto;
 }
 
 .course-info h4 {
@@ -250,7 +253,7 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 2rem;
-  margin-left: 9rem;
+  margin-left: 12rem;
 }
 
 .course-item button:hover {

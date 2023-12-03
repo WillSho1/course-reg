@@ -8,7 +8,11 @@
         <div class="load-subjects">
           <button @click="fetchSubjects">Load Subjects and Courses</button>
         </div>
+        <div class="router-link">
+          <RouterLink to="/addcourseadmin">Add Course to Database</RouterLink>
+        </div>
       </div>
+      <div class="divider"></div>
     </header>
     <div class="subjects-container" v-if="loaded">
       <div v-for="(courses, subject) in subjects" :key="subject" class="subject">
@@ -52,7 +56,6 @@ watch(user, async (newUser) => {
     }
 
     // Load subjects after authentication and role verification
-    onMounted(fetchSubjects);
   }
 }, { immediate: true });
 
@@ -97,6 +100,9 @@ watch(user, async (newUser) => {
     font-size: 3rem;
     font-weight: bold;
   }
+  .admin-header-content h1{
+    margin-bottom: 50px;
+  }
   .subjects-container {
     font-size: 1.5rem;
     text-align: center;
@@ -126,13 +132,33 @@ watch(user, async (newUser) => {
     background-color: #fff;
     padding: 1rem 2rem;
     border-radius: 4px;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     border: none;
     cursor: pointer;
+    margin-right: 100px;
   }
 
   .load-subjects button:hover {
-    background-color: #e0e0e0;
+    background-color: gold;
   }
 
+  .router-link a {
+    color: #005792;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    font-size: 2.75rem;
+    border: none;
+    cursor: pointer;
+    margin-left: 100px;
+}
+
+.router-link a:hover {
+  background-color: gold;
+}
+.admin-header-content h1 {
+  margin-bottom: 150px;
+}
   </style>

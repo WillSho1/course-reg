@@ -4,6 +4,7 @@
       <div class="header-content">
         <h1>Select Subject to View Courses</h1>
       </div>
+      <div class="divider"></div>
     </header>
     <div v-for="(subject, index) in subjects" :key="index" class="subject-row">
       <div class="subject-title" @click="selectSubject(index)">
