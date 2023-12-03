@@ -1,13 +1,11 @@
 """ Use Case: An admin adding a section to a database.
     Users: Admins
     Type: POST
-    Endpoint: ./adminhomepage/sections/add
+    Endpoint: ./adminhomepage/section
     Provide in request:
         Body:
         {
-            "CourseID": '',
-            "UserID": '',
-            "Section": N
+            
         }
     TODO:
         Validate input data (e.g., check for missing fields, validate CourseID format).
@@ -26,27 +24,21 @@ def lambda_handler(event, context):
     course_id = event.get("CourseID")
     capacity = event.get("Capacity")
     section = event.get("Section")
-    enrollment = event.get("Enrollment")
     location = event.get("Location")
     schedule = event.get("Schedule")
     teacher_id = event.get("TeacherID")
+    teacher_Name = event.get("TeacherName")
 
     # Validate input data
-    if not all([course_id, capacity, section, enrollment, location, schedule, teacher_id]):
+    if not all([course_id, capacity, section, location, schedule, teacher_id]):
         return response(400, 'Missing required course details')
-
-    # Validate section is a number
-    try:
-        section = int(section)
-    except ValueError:
-        return response(400, 'Section must be a number')
 
     # Check if the course already exists
     existing_course = client.get_item(
         TableName='Courses',
         Key={
             'CourseID': {'S': course_id},
-            'Section': {'N': str(section)}
+            'Section': {'S': section}
         }
     )
 
@@ -58,12 +50,13 @@ def lambda_handler(event, context):
         TableName='Courses',
         Item={
             'CourseID': {'S': course_id},
-            'Section': {'N': str(section)},
+            'Section': {'S': str(section)},
             'Capacity': {'N': str(capacity)},
-            'Enrollment': {'N': str(enrollment)},
+            'Enrollment': {'S': str(0)},
             'Location': {'S': location},
             'Schedule': {'M': schedule},
             'TeacherID': {'S': teacher_id},
+            'TeacherName': {'S': teacher_Name},
             'StudentList': {'L': []}  # Initializing StudentList as an empty list
         }
     )
@@ -75,6 +68,10 @@ def response(status_code, message):
         'statusCode': status_code,
         'body': json.dumps(message),
         'headers': {
-            'Content-Type': 'application/json'
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "OPTIONS,POST",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json"
         }
+
     }
