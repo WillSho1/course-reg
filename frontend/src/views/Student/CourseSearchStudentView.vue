@@ -76,7 +76,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, watch, nextTick } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
