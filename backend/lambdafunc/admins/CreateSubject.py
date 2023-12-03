@@ -1,7 +1,7 @@
 """ Use Case: An admin adding a subject to a database.
     Users: Admins
     Type: POST
-    Endpoint: ./adminhomepage/subjects/add
+    Endpoint: ./adminhomepage
     Provide in request:
         Body:
         {

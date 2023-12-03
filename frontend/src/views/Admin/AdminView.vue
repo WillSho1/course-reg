@@ -1,5 +1,8 @@
 <template v-if="isAuthenticated">
     <header class="app-header">
+      <div class="header-content">
+        <h1>Welcome {{ Name }}!</h1>
+      </div>
       <div class="admin-header-content">
         <h1>{{ title }}</h1>
         <div class="load-subjects">
@@ -35,6 +38,8 @@ const router = useRouter();
 const subjects = ref({});
 const loaded = ref(false);
 const title = ref('');
+let role = '';
+let Name = ''
 
 watch(user, async (newUser) => {
   if (newUser) {
