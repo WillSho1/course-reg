@@ -185,22 +185,22 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.header-content h1 {
-  color:#fff;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-}
-
 .header-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* This will space out the children */
   align-items: center;
   font-size: 3rem;
   font-weight: bold;
 }
 
+/* Adjust the h1 element to align left */
+.header-content h1 {
+  color:#fff;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+  margin-right: auto; /* Pushes all other elements to the right */
+}
 
 .course-search {
-  padding: 0 2rem;
   margin-bottom: 1rem;
 }
 
