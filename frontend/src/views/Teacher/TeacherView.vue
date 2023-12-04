@@ -5,7 +5,7 @@
     </div>
     <div class="teacher-divider"></div>
     <div class="teacher-course-list">
-      <h2>Below are your enrolled courses:</h2>
+      <h2>Below are the courses you are teaching!:</h2>
       <ul>
         <li v-for="course in courses" :key="course" class="teacher-course-item">
           <span class="teacher-course-name">{{ course }}</span>
