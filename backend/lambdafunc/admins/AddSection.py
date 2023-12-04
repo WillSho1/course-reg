@@ -52,7 +52,7 @@ def lambda_handler(event, context):
             'CourseID': {'S': course_id},
             'Section': {'S': str(section)},
             'Capacity': {'N': str(capacity)},
-            'Enrollment': {'S': str(0)},
+            'Enrollment': {'N': '0'},
             'Location': {'S': location},
             'Schedule': {'M': schedule},
             'TeacherID': {'S': teacher_id},
