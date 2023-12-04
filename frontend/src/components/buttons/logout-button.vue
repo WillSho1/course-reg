@@ -7,12 +7,13 @@
   <script setup>
   import { useAuth0 } from "@auth0/auth0-vue";
   
-  const { logout } = useAuth0();
+  const { logout } = useAuth0(); // this is the logout function from the Auth0 SDK
   
-  const handleLogout = () =>
+  // handleLogout function to handle the logout button click event
+  const handleLogout = () => 
     logout({
       logoutParams: {
-        returnTo: window.location.origin,
+        returnTo: window.location.origin, // this is the URL that the user will be redirected to after logout
       }
     });
   </script>

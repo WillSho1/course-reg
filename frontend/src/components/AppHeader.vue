@@ -5,7 +5,6 @@
       <nav v-if="showLoginLink">
         <ul>
           <li>
-            <!--<RouterLink v-if="route==='/studentcs'" :class="left" :to="`/studenthome`">&#9664</RouterLink>-->
             <logoutButton/>
           </li>
         </ul>
@@ -22,39 +21,36 @@ import logoutButton from './buttons/logout-button.vue';
 const title = ref("Section 1 Group 7 Course System");
 const route = useRoute();
 
-// By default, show the link and the header
+// by default, show the link and the header
 const showLoginLink = ref(true);
-const showHeader = ref(true); // New variable to control the header visibility
+const showHeader = ref(true); // new variable to control the header visibility
 
 watch(route, (newRoute) => {
   // Hide the header and link only if on the home page
   const isHomePage = newRoute.path === '/home';
   showLoginLink.value = !isHomePage;
-  showHeader.value = !isHomePage; // Hide the entire header on the home page
+  showHeader.value = !isHomePage; // hide the entire header on the home page
 });
 </script>
 
 <style>
-/* give the header itself a background color, a border, and add some padding to the content */
 .app-header {
-  background-color: #007BFF; /* Blue background */
+  background-color: #007BFF; 
   border-bottom: 5px solid #fff;
   padding: 1rem;
   text-align: center;
 }
 
-/* Logout button styles */
 .app-header a {
-  color: #fff; /* White text */
+  color: #fff; 
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Highlight color on hover */
 .app-header a:hover {
-  background-color: #FFC107; /* Highlight color (example: yellow) */
-  color: #000; /* Text color on hover (example: black) */
+  background-color: #FFC107; 
+  color: #000; 
 }
 </style>

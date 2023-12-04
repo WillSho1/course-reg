@@ -1,4 +1,4 @@
-<!--this is copied from the lab9 Auth0 example, styling is our own-->
+<!-- this is copied from the lab9 Auth0 example, styling is our own -->
 <template>
   <button class="button__login" @click="handleLogin">Log In with Auth0</button>
 </template>
@@ -6,12 +6,13 @@
 <script setup>
 import { useAuth0 } from "@auth0/auth0-vue";
 
-const { loginWithRedirect } = useAuth0();
+const { loginWithRedirect } = useAuth0(); // useAuth0 hook to retrieve the loginWithRedirect method
 
+// handleLogin function to handle the login button click event
 const handleLogin = () => {
   loginWithRedirect({
     appState: {
-      target: "/callback",
+      target: "/callback", // redirect to callback page after login
     },
   });
 };
