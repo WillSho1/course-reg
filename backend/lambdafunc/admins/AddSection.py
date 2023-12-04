@@ -18,18 +18,20 @@
 import json
 import boto3
 
+
 client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
+    # extract data from the request body
     course_id = event.get("CourseID")
     capacity = event.get("Capacity")
     section = event.get("Section")
     location = event.get("Location")
     schedule = event.get("Schedule")
     teacher_id = event.get("TeacherID")
-    teacher_Name = event.get("TeacherName")
+    teacher_name = event.get("TeacherName")
 
-    # Validate input data
+    # ensure all required fields are present
     if not all([course_id, capacity, section, location, schedule, teacher_id]):
         return response(400, 'Missing required course details')
 
@@ -56,7 +58,7 @@ def lambda_handler(event, context):
             'Location': {'S': location},
             'Schedule': {'M': schedule},
             'TeacherID': {'S': teacher_id},
-            'TeacherName': {'S': teacher_Name},
+            'TeacherName': {'S': teacher_name},
             'StudentList': {'L': []}  # Initializing StudentList as an empty list
         }
     )

@@ -24,6 +24,8 @@ client = boto3.client('dynamodb')
 
 def lambda_handler(event, context):
     subject = event.get("subject")
+
+    # Get the value of the "courseid" key from the event dictionary
     courseid = event.get("courseid")
     description = event.get("Description")
     name = event.get("Name")
@@ -43,7 +45,7 @@ def lambda_handler(event, context):
     if 'Item' in existing_subject:
         return response(400, f'Subject {subject} with CourseID {courseid} already exists')
 
- 
+    
     client.put_item(
         TableName='Subjects',
         Item={
